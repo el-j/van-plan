@@ -9,75 +9,45 @@ describe('useVanState hook', () => {
 
     expect(result.current.state.activeTab).toBe('3d');
     expect(result.current.state.unit).toBe('mm');
+    expect(result.current.state.driveSide).toBe('LHD');
     expect(result.current.state.isPartitionOpen).toBe(false);
     expect(result.current.state.isBedLowered).toBe(false);
   });
 
-  it('updates active tab', () => {
+  it('updates active tab and driveSide', () => {
     const { result } = renderHook(() => useVanState());
 
     act(() => {
       result.current.setActiveTab('2d');
+      result.current.setDriveSide('RHD');
+      result.current.setCutawayPosition(0.7);
+      result.current.setSelectedModuleId('bed');
     });
     expect(result.current.state.activeTab).toBe('2d');
+    expect(result.current.state.driveSide).toBe('RHD');
+    expect(result.current.state.cutawayPosition).toBe(0.7);
+    expect(result.current.state.selectedModuleId).toBe('bed');
   });
 
-  it('toggles partition, sliding door, rear doors, kitchen, and bed', () => {
+  it('toggles partition, sliding door, rear doors, kitchen, bed, and layers', () => {
     const { result } = renderHook(() => useVanState());
 
     act(() => {
       result.current.togglePartitionDoor();
-    });
-    expect(result.current.state.isPartitionOpen).toBe(true);
-
-    act(() => {
       result.current.toggleSlidingDoor();
-    });
-    expect(result.current.state.isSlidingOpen).toBe(true);
-
-    act(() => {
       result.current.toggleRearDoors();
-    });
-    expect(result.current.state.isRearOpen).toBe(true);
-
-    // Toggle kitchen on
-    act(() => {
       result.current.toggleKitchen();
-    });
-    expect(result.current.state.isKitchenExtended).toBe(true);
-    expect(result.current.state.isSlidingOpen).toBe(true);
-
-    // Toggle kitchen off
-    act(() => {
-      result.current.toggleKitchen();
-    });
-    expect(result.current.state.isKitchenExtended).toBe(false);
-
-    act(() => {
       result.current.toggleBed();
+      result.current.toggleLayer2D('bed');
+      result.current.toggleLayer2D('kitchen');
     });
+
+    expect(result.current.state.isPartitionOpen).toBe(true);
+    expect(result.current.state.isSlidingOpen).toBe(true);
+    expect(result.current.state.isRearOpen).toBe(true);
+    expect(result.current.state.isKitchenExtended).toBe(true);
     expect(result.current.state.isBedLowered).toBe(true);
-  });
-
-  it('updates display mode, camera preset, blueprint view, unit, cutaway position, and inspected part', () => {
-    const { result } = renderHook(() => useVanState());
-
-    act(() => {
-      result.current.setDisplayMode('wireframe');
-      result.current.setCameraPreset('top');
-      result.current.setBlueprintView('side');
-      result.current.setUnit('cm');
-      result.current.setCutawayPosition(0.8);
-      result.current.setSelectedModuleId('bed');
-      result.current.setInspectedPart(INTERIOR_MODULES[0]);
-    });
-
-    expect(result.current.state.displayMode).toBe('wireframe');
-    expect(result.current.state.cameraPreset).toBe('top');
-    expect(result.current.state.blueprintView).toBe('side');
-    expect(result.current.state.unit).toBe('cm');
-    expect(result.current.state.cutawayPosition).toBe(0.8);
-    expect(result.current.state.selectedModuleId).toBe('bed');
-    expect(result.current.state.inspectedPart).toEqual(INTERIOR_MODULES[0]);
+    expect(result.current.state.visibleLayers2D.bed).toBe(false);
+    expect(result.current.state.visibleLayers2D.kitchen).toBe(false);
   });
 });

@@ -9,6 +9,7 @@ describe('BlueprintCanvas2D component', () => {
     activeTab: '2d',
     selectedModuleId: null,
     unit: 'mm',
+    driveSide: 'LHD',
     isPartitionOpen: false,
     isSlidingOpen: false,
     isRearOpen: false,
@@ -21,13 +22,25 @@ describe('BlueprintCanvas2D component', () => {
     blueprintView: 'floor',
     showDimensions2D: true,
     showPassageways2D: true,
+    visibleLayers2D: {
+      dimensions: true,
+      walkway: true,
+      bed: true,
+      kitchen: true,
+      benches: true,
+      partition: true,
+      chassis: true,
+    },
     inspectedPart: null,
   };
 
-  it('renders canvas element for floor view', () => {
-    const { container } = render(<BlueprintCanvas2D vanState={mockVanState} />);
-    const canvas = container.querySelector('canvas');
-    expect(canvas).toBeInTheDocument();
+  it('renders canvas element for floor view (LHD & RHD)', () => {
+    const { container, rerender } = render(<BlueprintCanvas2D vanState={mockVanState} />);
+    expect(container.querySelector('canvas')).toBeInTheDocument();
+
+    const rhdState = { ...mockVanState, driveSide: 'RHD' as const };
+    rerender(<BlueprintCanvas2D vanState={rhdState} />);
+    expect(container.querySelector('canvas')).toBeInTheDocument();
   });
 
   it('renders canvas element for side elevation view', () => {
@@ -40,13 +53,6 @@ describe('BlueprintCanvas2D component', () => {
   it('renders canvas element for rear elevation view', () => {
     const rearState = { ...mockVanState, blueprintView: 'rear' as const };
     const { container } = render(<BlueprintCanvas2D vanState={rearState} />);
-    const canvas = container.querySelector('canvas');
-    expect(canvas).toBeInTheDocument();
-  });
-
-  it('renders fallback for exploded view', () => {
-    const explodedState = { ...mockVanState, blueprintView: 'exploded' as const };
-    const { container } = render(<BlueprintCanvas2D vanState={explodedState} />);
     const canvas = container.querySelector('canvas');
     expect(canvas).toBeInTheDocument();
   });

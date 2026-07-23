@@ -1,6 +1,7 @@
 export type TabType = '3d' | '2d' | 'workshop' | 'bom' | 'schematic';
 export type DisplayMode = 'solid' | 'wireframe' | 'exploded' | 'cutaway';
 export type MetricUnit = 'mm' | 'cm' | 'm';
+export type DriveSide = 'LHD' | 'RHD';
 
 export interface VehicleDimensions {
   cargoLength: number; // 3050 mm
@@ -100,10 +101,21 @@ export interface InteriorModule {
   highlights: string[];
 }
 
+export interface VisibleLayers2D {
+  dimensions: boolean;
+  walkway: boolean;
+  bed: boolean;
+  kitchen: boolean;
+  benches: boolean;
+  partition: boolean;
+  chassis: boolean;
+}
+
 export interface VanState {
   activeTab: TabType;
   selectedModuleId: string | null;
   unit: MetricUnit;
+  driveSide: DriveSide; // LHD (German) vs RHD
   // Interactive Toggles
   isPartitionOpen: boolean;
   isSlidingOpen: boolean;
@@ -119,6 +131,7 @@ export interface VanState {
   blueprintView: 'floor' | 'side' | 'rear' | 'exploded';
   showDimensions2D: boolean;
   showPassageways2D: boolean;
+  visibleLayers2D: VisibleLayers2D;
   // Inspector
   inspectedPart: BOMItem | InteriorModule | null;
 }

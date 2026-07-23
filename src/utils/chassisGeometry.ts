@@ -118,25 +118,27 @@ export function createWallPillarsGroup(cargoLengthMm: number = 3050, cargoHeight
 }
 
 /**
- * Generates Authentic Mercedes T1 Bremer GFK High-Roof (Hochdach) 3D Geometry
+ * Generates Authentic Mercedes T1 Bremer GFK High-Roof (Hochdach) 3D Solid Shell Mesh
  */
 export function createBremerRoofGeometry(cargoLengthMm: number = 3050): THREE.BufferGeometry {
   const L = cargoLengthMm / 1000;
-  const shape = new THREE.Shape();
+  const W = 1.72; // Full cargo width
 
-  // Authentic Bremer High-Roof Profile (X-Y Plane Cross Section)
-  // Starts at shoulder height Y = 1.40m, width 1.56m (X = -0.78 to +0.78)
-  shape.moveTo(-0.78, 1.40);
-  shape.quadraticCurveTo(-0.76, 1.72, -0.62, 1.82); // Curved roof shoulder
-  shape.lineTo(-0.35, 1.85); // Flat crowned top plate
-  shape.lineTo(0.35, 1.85);
-  shape.lineTo(0.62, 1.82);
-  shape.quadraticCurveTo(0.76, 1.72, 0.78, 1.40); // Right curved shoulder
-  shape.lineTo(0.84, 1.40);
-  shape.quadraticCurveTo(0.80, 1.76, 0.64, 1.86);
-  shape.lineTo(0.36, 1.88);
-  shape.lineTo(-0.36, 1.88);
-  shape.quadraticCurveTo(-0.80, 1.76, -0.84, 1.40);
+  // Create solid curved roof cap geometry (X-Y plane cross section, extruded along Z)
+  const shape = new THREE.Shape();
+  // Bottom left shoulder at Y = 1.40m
+  shape.moveTo(-W / 2, 1.40);
+  // Curve up to roof shoulder
+  shape.quadraticCurveTo(-W / 2, 1.75, -0.65, 1.85);
+  // Top flat crowned roof line
+  shape.lineTo(0.65, 1.85);
+  // Right roof shoulder curve
+  shape.quadraticCurveTo(W / 2, 1.75, W / 2, 1.40);
+  // Close top cap
+  shape.lineTo(W / 2, 1.42);
+  shape.quadraticCurveTo(W / 2 - 0.02, 1.77, 0.65, 1.87);
+  shape.lineTo(-0.65, 1.87);
+  shape.quadraticCurveTo(-W / 2 + 0.02, 1.77, -W / 2, 1.42);
   shape.closePath();
 
   const extrudeSettings: THREE.ExtrudeGeometryOptions = {
@@ -146,17 +148,14 @@ export function createBremerRoofGeometry(cargoLengthMm: number = 3050): THREE.Bu
   };
 
   const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  // Center extrusion along Z axis
   geo.center();
-  // Lift to proper Y position
-  geo.translate(0, 0, 0);
   return geo;
 }
 
 /**
  * Generates Front Driver Cockpit (Bremer Short-Snout Nose & Windshield) 3D Group
  */
-export function createDriverCabGroup(): THREE.Group {
+export function createDriverCabGroup(driveSide: 'LHD' | 'RHD' = 'LHD'): THREE.Group {
   const group = new THREE.Group();
 
   const bodyMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.4, metalness: 0.5 });
@@ -183,14 +182,17 @@ export function createDriverCabGroup(): THREE.Group {
   windMesh.position.set(0, 1.15, -1.80);
   group.add(windMesh);
 
-  // Driver & Passenger Seats in Cockpit (LHD)
-  const seatL = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
-  seatL.position.set(-0.45, 0.50, -1.55); // Driver seat (Left)
-  group.add(seatL);
+  // Driver & Passenger Seats in Cockpit based on LHD vs RHD
+  const driverX = driveSide === 'LHD' ? -0.45 : 0.45;
+  const passX = driveSide === 'LHD' ? 0.45 : -0.45;
 
-  const seatR = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
-  seatR.position.set(0.45, 0.50, -1.55); // Passenger seat (Right)
-  group.add(seatR);
+  const seatDriver = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
+  seatDriver.position.set(driverX, 0.50, -1.55); // Driver seat
+  group.add(seatDriver);
+
+  const seatPassenger = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
+  seatPassenger.position.set(passX, 0.50, -1.55); // Passenger seat
+  group.add(seatPassenger);
 
   return group;
 }

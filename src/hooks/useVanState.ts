@@ -1,11 +1,12 @@
-import { useState, useCallback } from 'react';
-import { TabType, DisplayMode, MetricUnit, VanState, BOMItem, InteriorModule } from '../types/van';
+import { useState } from 'react';
+import { VanState, TabType, MetricUnit, DisplayMode, InteriorModule, BOMItem, DriveSide, VisibleLayers2D } from '../types/van';
 
 export function useVanState() {
   const [state, setState] = useState<VanState>({
     activeTab: '3d',
     selectedModuleId: null,
     unit: 'mm',
+    driveSide: 'LHD', // German standard (Left-hand drive)
     isPartitionOpen: false,
     isSlidingOpen: false,
     isRearOpen: false,
@@ -18,83 +19,66 @@ export function useVanState() {
     blueprintView: 'floor',
     showDimensions2D: true,
     showPassageways2D: true,
+    visibleLayers2D: {
+      dimensions: true,
+      walkway: true,
+      bed: true,
+      kitchen: true,
+      benches: true,
+      partition: true,
+      chassis: true,
+    },
     inspectedPart: null,
   });
 
-  const setActiveTab = useCallback((tab: TabType) => {
-    setState((prev) => ({ ...prev, activeTab: tab }));
-  }, []);
+  const setActiveTab = (tab: TabType) => setState((prev) => ({ ...prev, activeTab: tab }));
+  const setUnit = (unit: MetricUnit) => setState((prev) => ({ ...prev, unit }));
+  const setDriveSide = (driveSide: DriveSide) => setState((prev) => ({ ...prev, driveSide }));
 
-  const setSelectedModuleId = useCallback((id: string | null) => {
-    setState((prev) => ({ ...prev, selectedModuleId: id }));
-  }, []);
+  const togglePartitionDoor = () => setState((prev) => ({ ...prev, isPartitionOpen: !prev.isPartitionOpen }));
+  const toggleSlidingDoor = () => setState((prev) => ({ ...prev, isSlidingOpen: !prev.isSlidingOpen }));
+  const toggleRearDoors = () => setState((prev) => ({ ...prev, isRearOpen: !prev.isRearOpen }));
+  const toggleKitchen = () => setState((prev) => ({
+    ...prev,
+    isKitchenExtended: !prev.isKitchenExtended,
+    isSlidingOpen: !prev.isKitchenExtended ? true : prev.isSlidingOpen,
+  }));
+  const toggleBed = () => setState((prev) => ({ ...prev, isBedLowered: !prev.isBedLowered }));
 
-  const setUnit = useCallback((unit: MetricUnit) => {
-    setState((prev) => ({ ...prev, unit }));
-  }, []);
+  const setDisplayMode = (mode: DisplayMode) => setState((prev) => ({ ...prev, displayMode: mode }));
+  const setCutawayPosition = (pos: number) => setState((prev) => ({ ...prev, cutawayPosition: pos }));
+  const setCameraPreset = (preset: VanState['cameraPreset']) => setState((prev) => ({ ...prev, cameraPreset: preset }));
+  const setBlueprintView = (view: VanState['blueprintView']) => setState((prev) => ({ ...prev, blueprintView: view }));
 
-  const togglePartitionDoor = useCallback(() => {
-    setState((prev) => ({ ...prev, isPartitionOpen: !prev.isPartitionOpen }));
-  }, []);
+  const setSelectedModuleId = (id: string | null) => setState((prev) => ({ ...prev, selectedModuleId: id }));
+  const setInspectedPart = (part: BOMItem | InteriorModule | null) => setState((prev) => ({ ...prev, inspectedPart: part }));
 
-  const toggleSlidingDoor = useCallback(() => {
-    setState((prev) => ({ ...prev, isSlidingOpen: !prev.isSlidingOpen }));
-  }, []);
-
-  const toggleRearDoors = useCallback(() => {
-    setState((prev) => ({ ...prev, isRearOpen: !prev.isRearOpen }));
-  }, []);
-
-  const toggleKitchen = useCallback(() => {
-    setState((prev) => {
-      const nextKitchen = !prev.isKitchenExtended;
-      // Auto open sliding door if kitchen is extending outdoor
-      return {
-        ...prev,
-        isKitchenExtended: nextKitchen,
-        isSlidingOpen: nextKitchen ? true : prev.isSlidingOpen,
-      };
-    });
-  }, []);
-
-  const toggleBed = useCallback(() => {
-    setState((prev) => ({ ...prev, isBedLowered: !prev.isBedLowered }));
-  }, []);
-
-  const setDisplayMode = useCallback((displayMode: DisplayMode) => {
-    setState((prev) => ({ ...prev, displayMode }));
-  }, []);
-
-  const setCameraPreset = useCallback((cameraPreset: VanState['cameraPreset']) => {
-    setState((prev) => ({ ...prev, cameraPreset }));
-  }, []);
-
-  const setCutawayPosition = useCallback((cutawayPosition: number) => {
-    setState((prev) => ({ ...prev, cutawayPosition }));
-  }, []);
-
-  const setBlueprintView = useCallback((blueprintView: VanState['blueprintView']) => {
-    setState((prev) => ({ ...prev, blueprintView }));
-  }, []);
-
-  const setInspectedPart = useCallback((inspectedPart: BOMItem | InteriorModule | null) => {
-    setState((prev) => ({ ...prev, inspectedPart }));
-  }, []);
+  const toggleLayer2D = (layer: keyof VisibleLayers2D) => {
+    setState((prev) => ({
+      ...prev,
+      visibleLayers2D: {
+        ...prev.visibleLayers2D,
+        [layer]: !prev.visibleLayers2D[layer],
+      },
+    }));
+  };
 
   return {
     state,
     setActiveTab,
-    setSelectedModuleId,
     setUnit,
+    setDriveSide,
     togglePartitionDoor,
     toggleSlidingDoor,
     toggleRearDoors,
     toggleKitchen,
     toggleBed,
     setDisplayMode,
-    setCameraPreset,
     setCutawayPosition,
+    setCameraPreset,
     setBlueprintView,
+    setSelectedModuleId,
     setInspectedPart,
+    toggleLayer2D,
   };
 }

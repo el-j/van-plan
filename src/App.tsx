@@ -15,6 +15,7 @@ export const App: React.FC = () => {
     state,
     setActiveTab,
     setUnit,
+    setDriveSide,
     togglePartitionDoor,
     toggleSlidingDoor,
     toggleRearDoors,
@@ -24,6 +25,7 @@ export const App: React.FC = () => {
     setCameraPreset,
     setBlueprintView,
     setInspectedPart,
+    toggleLayer2D,
   } = useVanState();
 
   return (
@@ -60,7 +62,12 @@ export const App: React.FC = () => {
 
         {state.activeTab === '2d' && (
           <div className="blueprint-view-container">
-            <BlueprintControls vanState={state} onSetBlueprintView={setBlueprintView} />
+            <BlueprintControls
+              vanState={state}
+              onSetBlueprintView={setBlueprintView}
+              onSetDriveSide={setDriveSide}
+              onToggleLayer2D={toggleLayer2D}
+            />
             <BlueprintCanvas2D vanState={state} />
           </div>
         )}

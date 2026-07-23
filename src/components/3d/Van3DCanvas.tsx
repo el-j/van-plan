@@ -296,13 +296,12 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     // Authentic GFK High Roof Superstructure (Hochdach)
     const roofGeo = createBremerRoofGeometry();
     const roofMesh = new THREE.Mesh(roofGeo, hullMat);
-    roofMesh.rotation.x = Math.PI / 2;
     roofMesh.position.set(0, 0, 0);
     roofMesh.userData = { isVehicleHull: true };
     hullGroup.add(roofMesh);
 
     // Front Driver Cockpit (Bremer Short-Snout Nose & Windshield)
-    const driverCab = createDriverCabGroup();
+    const driverCab = createDriverCabGroup(vanState.driveSide);
     hullGroup.add(driverCab);
 
     scene.add(hullGroup);

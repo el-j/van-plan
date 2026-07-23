@@ -9,6 +9,7 @@ describe('ControlsOverlay3D component', () => {
     activeTab: '3d',
     selectedModuleId: null,
     unit: 'mm',
+    driveSide: 'LHD',
     isPartitionOpen: true,
     isSlidingOpen: true,
     isRearOpen: true,
@@ -21,6 +22,15 @@ describe('ControlsOverlay3D component', () => {
     blueprintView: 'floor',
     showDimensions2D: true,
     showPassageways2D: true,
+    visibleLayers2D: {
+      dimensions: true,
+      walkway: true,
+      bed: true,
+      kitchen: true,
+      benches: true,
+      partition: true,
+      chassis: true,
+    },
     inspectedPart: null,
   };
 

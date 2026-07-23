@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercedes T1 Bremer RTW - Ausbauplaner</title>
+    <!-- Three.js and OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        :root {
+            --bg-dark: #121418;
+            --panel-bg: #1e222b;
+            --accent: #ff6b00;
+            --accent-hover: #ff8533;
+            --text-light: #f0f2f5;
+            --text-muted: #a0a6b2;
+            --border: #2d3340;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--panel-bg);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background-color: var(--accent);
+            color: #000;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn.active,
+        .nav-btn:hover {
+            color: #fff;
+            background-color: var(--panel-bg);
+        }
+
+        .nav-btn.active {
+            border-bottom: 2px solid var(--accent);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-panel {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .view-panel.active {
+            display: flex;
+        }
+
+        /* 3D View Controls Overlay */
+        .controls-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 34, 43, 0.92);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-toggle {
+            background: #2a303d;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-toggle.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Canvas views layout */
+        .canvas-container-split {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .canvas-box {
+            flex: 1;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .canvas-box h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--accent);
+            width: 100%;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .description-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 280px;
+            background: rgba(30, 34, 43, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: var(--text-light);
+        }
+
+        .description-box h4 {
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .spec-list {
+            margin-top: 10px;
+            list-style: none;
+        }
+
+        .spec-list li {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
+        }
+
+        .spec-list span {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>
+            MB T1 Bremer (W602) Camper Planer
+            <span class="badge">Deutsches Modell (LHD)</span>
+        </h1>
+        <nav>
+            <button class="nav-btn active" onclick="switchView('3d')">3D Gesamtausbau</button>
+            <button class="nav-btn" onclick="switchView('2d')">2D Grundriss (mm)</button>
+            <button class="nav-btn" onclick="switchView('bed')">Hubbett Gurtsystem</button>
+            <button class="nav-btn" onclick="switchView('kitchen')">Küche & Schwerlastauszug</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- VIEW 1: 3D THREE.JS CANVAS -->
+        <div id="view-3d" class="view-panel active">
+            <div id="three-container" style="width: 100%; height: 100%;"></div>
+
+            <div class="description-box">
+                <h4>Fahrzeugdaten (T1 RTW)</h4>
+                <ul class="spec-list">
+                    <li><span>Laderaumlänge:</span> <strong>3.050 mm</strong></li>
+                    <li><span>Laderaumbreite:</span> <strong>1.720 mm</strong></li>
+                    <li><span>Stehhöhe Hochdach:</span> <strong>1.850 mm</strong></li>
+                    <li><span>Schiebetür:</span> <strong>Beifahrerseite (Rechts)</strong></li>
+                    <li><span>Trennwand-Tür:</span> <strong>Schiebetür nach links</strong></li>
+                </ul>
+            </div>
+
+            <div class="controls-overlay">
+                <div class="control-group">
+                    <label>Trennwand-Tür</label>
+                    <button id="btn-partition" class="btn-toggle" onclick="togglePartitionDoor()">Geschlossen</button>
+                </div>
+                <div class="control-group">
+                    <label>Schiebetür (Rechts)</label>
+                    <button id="btn-slidedoor" class="btn-toggle" onclick="toggleSlidingDoor()">Geschlossen</button>
+                </div>
+                <div class="control-group">
+                    <label>Auszieh-Küche</label>
+                    <button id="btn-kitchen" class="btn-toggle" onclick="toggleKitchen()">Eingefahren</button>
+                </div>
+                <div class="control-group">
+                    <label>Hubbett (Gurtzug)</label>
+                    <button id="btn-bed" class="btn-toggle" onclick="toggleBed()">An Decke (Tag)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: 2D FLOOR PLAN CANVAS -->
+        <div id="view-2d" class="view-panel">
+            <div class="canvas-container-split">
+                <div class="canvas-box" style="flex: 2;">
+                    <h3>2D Maßstabsgetreuer Grundriss (Draufsicht in mm)</h3>
+                    <canvas id="canvas-2d" width="900" height="500"></canvas>
+                </div>
+                <div class="canvas-box" style="flex: 1;">
+                    <h3>Maß-Analysen</h3>
+                    <div style="font-size: 0.9rem; line-height: 1.6; text-align: left; width: 100%;">
+                        <p><strong>1. Durchgangsbreite:</strong><br>
+                            Durch die schlanke Küche (40 cm Tiefe) bleiben an der Trennwand-Tür volle <strong>650 mm
+                                freie Gehbreite</strong>.</p>
+                        <br>
+                        <p><strong>2. Belade-Achse:</strong><br>
+                            Von den Heckflügeltüren bis zur Trennwandtür entsteht ein durchgehender, ebener Mittelgang
+                            mit <strong>600 mm Breite</strong>.</p>
+                        <br>
+                        <p><strong>3. Küche an der Schiebetür:</strong><br>
+                            Länge: 850 mm | Tiefe: 400 mm.<br>
+                            Lässt beim Einstieg von außen über 60 cm Türbreite frei!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: HUBBETT GURTSYSTEM CANVAS -->
+        <div id="view-bed" class="view-panel">
+            <div class="canvas-container-split">
+                <div class="canvas-box" style="flex: 1.5;">
+                    <h3>Schnittzeichnung: Hubbett mit 4-Punkt-Gurtband-Aufhängung</h3>
+                    <canvas id="canvas-bed-detail" width="700" height="450"></canvas>
+                </div>
+                <div class="canvas-box" style="flex: 1;">
+                    <h3>Funktionsprinzip Gurtsystem</h3>
+                    <div style="font-size: 0.88rem; line-height: 1.5; text-align: left; width: 100%;">
+                        <p><strong>Warum Gurte statt starrer Schienen?</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 8px; margin-bottom: 12px;">
+                            <li>Keine sperrigen Vertikalführungen im Innenraum.</li>
+                            <li>Kein Verkanten des Bettes.</li>
+                            <li>Extrem leicht (Alu-Profilrahmen + 4x Sicherheitsgurtband).</li>
+                        </ul>
+                        <p><strong>Mechanik:</strong></p>
+                        <p>4 Gurtbänder (an den 4 Bett-Ecken) führen über Decken-Umlenkrollen zu einer zentralen Welle
+                            mit Kurbel oder 12V-Rohrmotor. Beim Absenken liegt das Bett stabil auf den seitlichen Bänken
+                            auf.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: KITCHEN SLIDE-OUT CANVAS -->
+        <div id="view-kitchen" class="view-panel">
+            <div class="canvas-container-split">
+                <div class="canvas-box" style="flex: 1.5;">
+                    <h3>Detailzeichnung: Schwerlast-Auszugsküche mit Teleskop-Stützfuß</h3>
+                    <canvas id="canvas-kitchen-detail" width="700" height="450"></canvas>
+                </div>
+                <div class="canvas-box" style="flex: 1;">
+                    <h3>Outdoor-Kochen Ergonomie</h3>
+                    <div style="font-size: 0.88rem; line-height: 1.5; text-align: left; width: 100%;">
+                        <p><strong>Das Problem mit Van-Auszügen:</strong><br>
+                            Der Ladeboden des T1 liegt ca. 50 cm über der Straße. Eine normale Küchenhöhe im Bus (90 cm)
+                            wäre draußen auf 140 cm – unmöglich zum Kochen!</p>
+                        <br>
+                        <p><strong>Die Lösung (Absenkung + Teleskopfuß):</strong></p>
+                        <p>1. Der Gaskocher-Einsatz glidet auf Heavy-Duty Auszügen heraus.</p>
+                        <p>2. Über ein Parallelogramm-Gelenck senkt sich das Kochfeld um 25 cm auf angenehme 90 cm
+                            Stehhöhe ab.</p>
+                        <p>3. Ein stabiler Teleskopfuß stützt das Gewicht sicher auf dem Boden ab.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- NAVIGATION BETWEEN VIEWS ---
+        function switchView(viewId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById('view-' + viewId).classList.add('active');
+
+            if (viewId === '2d') draw2DPlan();
+            if (viewId === 'bed') drawBedDetail();
+            if (viewId === 'kitchen') drawKitchenDetail();
+        }
+
+        // --- THREE.JS 3D SCENE SETUP ---
+        let scene, camera, renderer, controls;
+        let partitionDoorMesh, slidingDoorMesh, kitchenMesh, kitchenLegMesh, bedMesh, beltLines = [];
+
+        let isPartitionOpen = false;
+        let isSlidingOpen = false;
+        let isKitchenExtended = false;
+        let isBedLowered = false;
+
+        function init3D() {
+            const container = document.getElementById('three-container');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x121418);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(4.5, 3.2, 5.0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 1.0, 0);
+            controls.update();
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 10, 7);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            // Grid
+            const grid = new THREE.GridHelper(10, 20, 0xff6b00, 0x2d3340);
+            grid.position.y = 0;
+            scene.add(grid);
+
+            buildVehicle3D();
+            animate();
+        }
+
+        function buildVehicle3D() {
+            // Vehicle Dimensions in meters
+            // X = Width (-0.86 to +0.86) -> Left is -X, Right is +X (German Sliding door on +X)
+            // Y = Height (0 to 1.85)
+            // Z = Length (-1.52 to +1.52) -> Front Partition at Z = -1.2, Rear Doors at Z = +1.5
+
+            // Floor
+            const floorGeo = new THREE.BoxGeometry(1.72, 0.05, 3.05);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x3a2e2b });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.position.set(0, 0.025, 0);
+            scene.add(floor);
+
+            // Transparent Hull Shell (T1 Contour)
+            const hullGeo = new THREE.BoxGeometry(1.72, 1.85, 3.05);
+            const hullMat = new THREE.MeshStandardMaterial({ color: 0x88aaee, transparent: true, opacity: 0.12, wireframe: false });
+            const hull = new THREE.Mesh(hullGeo, hullMat);
+            hull.position.set(0, 0.95, 0);
+            scene.add(hull);
+
+            // Partition Wall (Z = -1.2) with Door Cutout
+            const partWallGroup = new THREE.Group();
+
+            // Wall Left Side
+            const partLeftGeo = new THREE.BoxGeometry(0.85, 1.80, 0.03);
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+            const partLeft = new THREE.Mesh(partLeftGeo, wallMat);
+            partLeft.position.set(-0.435, 0.9, -1.2);
+            partWallGroup.add(partLeft);
+
+            // Wall Right Top Header
+            const partTopGeo = new THREE.BoxGeometry(0.87, 0.35, 0.03);
+            const partTop = new THREE.Mesh(partTopGeo, wallMat);
+            partTop.position.set(0.425, 1.625, -1.2);
+            partWallGroup.add(partTop);
+
+            // Partition Sliding Door Panel
+            const partDoorGeo = new THREE.BoxGeometry(0.65, 1.45, 0.02);
+            const partDoorMat = new THREE.MeshStandardMaterial({ color: 0xbb5533 });
+            partitionDoorMesh = new THREE.Mesh(partDoorGeo, partDoorMat);
+            partitionDoorMesh.position.set(0.35, 0.725, -1.19);
+            partWallGroup.add(partitionDoorMesh);
+
+            scene.add(partWallGroup);
+
+            // Vehicle Sliding Door Cutout Frame on Right Side (+X)
+            const slideDoorGeo = new THREE.BoxGeometry(0.02, 1.40, 1.10);
+            const slideDoorMat = new THREE.MeshStandardMaterial({ color: 0x4488ff, transparent: true, opacity: 0.4 });
+            slidingDoorMesh = new THREE.Mesh(slideDoorGeo, slideDoorMat);
+            slidingDoorMesh.position.set(0.86, 0.95, -0.6);
+            scene.add(slidingDoorMesh);
+
+            // Longitudinal Benches (Left & Right under Bed Area)
+            const benchMat = new THREE.MeshStandardMaterial({ color: 0x226655 });
+
+            // Left Bench
+            const benchL = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.45, 1.80), benchMat);
+            benchL.position.set(-0.61, 0.25, 0.5);
+            scene.add(benchL);
+
+            // Right Bench
+            const benchR = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.45, 1.80), benchMat);
+            benchR.position.set(0.61, 0.25, 0.5);
+            scene.add(benchR);
+
+            // Kitchen Unit (Slim 40cm D, 85cm L)
+            const kitchenGroup = new THREE.Group();
+            const kitBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.88, 0.85), new THREE.MeshStandardMaterial({ color: 0x333333 }));
+            kitBody.position.set(0, 0.44, 0);
+            kitchenGroup.add(kitBody);
+
+            // Kitchen Sink/Stove Plate
+            const kitTop = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.02, 0.83), new THREE.MeshStandardMaterial({ color: 0xaaaaaa }));
+            kitTop.position.set(0, 0.89, 0);
+            kitchenGroup.add(kitTop);
+
+            // Telescoping Support Leg for Outdoor Mode
+            const legGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.85);
+            const legMat = new THREE.MeshStandardMaterial({ color: 0xff6b00 });
+            kitchenLegMesh = new THREE.Mesh(legGeo, legMat);
+            kitchenLegMesh.position.set(0.15, -0.42, 0);
+            kitchenLegMesh.visible = false;
+            kitchenGroup.add(kitchenLegMesh);
+
+            kitchenMesh = kitchenGroup;
+            kitchenMesh.position.set(0.60, 0.05, -0.65); // Right side, behind partition
+            scene.add(kitchenMesh);
+
+            // Hubbett (Drop-Down Bed) Framework & Mattress
+            const bedGroup = new THREE.Group();
+            const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.12, 1.85), new THREE.MeshStandardMaterial({ color: 0xeeeeee }));
+            bedGroup.add(bedFrame);
+
+            bedMesh = bedGroup;
+            bedMesh.position.set(0, 1.65, 0.5); // High position near ceiling
+            scene.add(bedMesh);
+
+            // 4 Belt Lines (Gurte)
+            const beltMat = new THREE.LineBasicMaterial({ color: 0xff6b00, linewidth: 3 });
+            const corners = [
+                [-0.65, 0.9], [0.65, 0.9],
+                [-0.65, -0.9], [0.65, -0.9]
+            ];
+
+            corners.forEach(c => {
+                const geo = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(c[0], 1.80, 0.5 + c[1]),
+                    new THREE.Vector3(c[0], 1.65, 0.5 + c[1])
+                ]);
+                const line = new THREE.Line(geo, beltMat);
+                scene.add(line);
+                beltLines.push({ line: line, corner: c });
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Smooth Animations
+            // Partition Door
+            const targetPartX = isPartitionOpen ? -0.25 : 0.35;
+            partitionDoorMesh.position.x += (targetPartX - partitionDoorMesh.position.x) * 0.1;
+
+            // Sliding Door
+            const targetSlideZ = isSlidingOpen ? 0.4 : -0.6;
+            slidingDoorMesh.position.z += (targetSlideZ - slidingDoorMesh.position.z) * 0.1;
+
+            // Kitchen Slide
+            const targetKitX = isKitchenExtended ? 1.25 : 0.60;
+            const targetKitY = isKitchenExtended ? -0.15 : 0.05; // Drops down outdoor
+            kitchenMesh.position.x += (targetKitX - kitchenMesh.position.x) * 0.1;
+            kitchenMesh.position.y += (targetKitY - kitchenMesh.position.y) * 0.1;
+            kitchenLegMesh.visible = isKitchenExtended;
+
+            // Bed Height
+            const targetBedY = isBedLowered ? 0.55 : 1.65;
+            bedMesh.position.y += (targetBedY - bedMesh.position.y) * 0.1;
+
+            // Update Straps / Belts
+            beltLines.forEach(b => {
+                const points = [
+                    new THREE.Vector3(b.corner[0], 1.80, 0.5 + b.corner[1]),
+                    new THREE.Vector3(b.corner[0], bedMesh.position.y, 0.5 + b.corner[1])
+                ];
+                b.line.geometry.setFromPoints(points);
+            });
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // --- BUTTON INTERACTION TOGGLES ---
+        function togglePartitionDoor() {
+            isPartitionOpen = !isPartitionOpen;
+            document.getElementById('btn-partition').classList.toggle('active', isPartitionOpen);
+            document.getElementById('btn-partition').innerText = isPartitionOpen ? "Offen" : "Geschlossen";
+        }
+
+        function toggleSlidingDoor() {
+            isSlidingOpen = !isSlidingOpen;
+            document.getElementById('btn-slidedoor').classList.toggle('active', isSlidingOpen);
+            document.getElementById('btn-slidedoor').innerText = isSlidingOpen ? "Offen" : "Geschlossen";
+        }
+
+        function toggleKitchen() {
+            isKitchenExtended = !isKitchenExtended;
+            if (isKitchenExtended && !isSlidingOpen) toggleSlidingDoor(); // Auto open door
+            document.getElementById('btn-kitchen').classList.toggle('active', isKitchenExtended);
+            document.getElementById('btn-kitchen').innerText = isKitchenExtended ? "Draußen (Absenkt)" : "Eingefahren";
+        }
+
+        function toggleBed() {
+            isBedLowered = !isBedLowered;
+            document.getElementById('btn-bed').classList.toggle('active', isBedLowered);
+            document.getElementById('btn-bed').innerText = isBedLowered ? "Abgesenkt (Nacht)" : "An Decke (Tag)";
+        }
+
+        // --- 2D CANVAS DRAWINGS ---
+        function draw2DPlan() {
+            const canvas = document.getElementById('canvas-2d');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Scale & Center
+            const startX = 100;
+            const startY = 80;
+            const scale = 0.22; // px per mm
+
+            // Vehicle Outer Body (3050 x 1720)
+            ctx.strokeStyle = '#a0a6b2';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(startX, startY, 3050 * scale, 1720 * scale);
+
+            // Partition Wall
+            ctx.fillStyle = '#dddddd';
+            ctx.fillRect(startX, startY, 30, 1720 * scale);
+
+            // Partition Door (Cutout)
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(startX, startY + (600 * scale), 30, 600 * scale);
+
+            // Benches (Left & Right)
+            ctx.fillStyle = 'rgba(34, 102, 85, 0.6)';
+            // Left Bench
+            ctx.fillRect(startX + (1150 * scale), startY, 1900 * scale, 500 * scale);
+            // Right Bench
+            ctx.fillRect(startX + (1150 * scale), startY + (1220 * scale), 1900 * scale, 500 * scale);
+
+            // Kitchen Unit
+            ctx.fillStyle = '#ff8533';
+            ctx.fillRect(startX + (200 * scale), startY + (1320 * scale), 850 * scale, 400 * scale);
+
+            // Annotations / Dimensions
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('← Fahrerkabine', startX - 80, startY + 180);
+            ctx.fillText('3050 mm Laderaum', startX + 250, startY - 15);
+            ctx.fillText('Küche (850x400)', startX + 50, startY + 320);
+            ctx.fillText('Freier Mittelgang (600 mm)', startX + 300, startY + 200);
+
+            // Walkway Arrow Line
+            ctx.strokeStyle = '#28a745';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY + 200);
+            ctx.lineTo(startX + (3050 * scale), startY + 200);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawBedDetail() {
+            const canvas = document.getElementById('canvas-bed-detail');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Roof Contour (Mercedes T1 High Top)
+            ctx.strokeStyle = '#a0a6b2';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(100, 380);
+            ctx.lineTo(100, 150);
+            ctx.quadraticCurveTo(350, 40, 600, 150);
+            ctx.lineTo(600, 380);
+            ctx.stroke();
+
+            // Benches at Bottom
+            ctx.fillStyle = '#226655';
+            ctx.fillRect(100, 280, 140, 100);
+            ctx.fillRect(460, 280, 140, 100);
+
+            // Ceiling Winding Shaft
+            ctx.fillStyle = '#aaaaaa';
+            ctx.fillRect(320, 70, 60, 20);
+
+            // Straps / Gurte
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 4;
+            // Left Belt
+            ctx.beginPath(); ctx.moveTo(180, 80); ctx.lineTo(180, 260); ctx.stroke();
+            // Right Belt
+            ctx.beginPath(); ctx.moveTo(520, 80); ctx.lineTo(520, 260); ctx.stroke();
+
+            // Mattress / Bed Frame (Lowered position)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(160, 250, 380, 30);
+            ctx.strokeStyle = '#ff6b00';
+            ctx.strokeRect(160, 250, 380, 30);
+
+            // Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px sans-serif';
+            ctx.fillText('Decken-Gurtwickler / Welle', 270, 50);
+            ctx.fillText('Sicherheits-Gurtband (4x)', 190, 170);
+            ctx.fillText('Bett liegt stabil auf Sitzbänken auf', 240, 310);
+        }
+
+        function drawKitchenDetail() {
+            const canvas = document.getElementById('canvas-kitchen-detail');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vehicle Floor
+            ctx.fillStyle = '#444';
+            ctx.fillRect(50, 220, 250, 20);
+            ctx.fillStyle = '#aaa';
+            ctx.fillText('Fahrzeugboden (T1)', 60, 260);
+
+            // Ground Level (Outdoor)
+            ctx.strokeStyle = '#28a745';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(300, 380); ctx.lineTo(650, 380); ctx.stroke();
+            ctx.fillText('Straßenboden (Outdoor)', 450, 400);
+
+            // Heavy Duty Slides
+            ctx.strokeStyle = '#ff6b00';
+            ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.moveTo(200, 210); ctx.lineTo(480, 210); ctx.stroke();
+
+            // Kitchen Outdoor Box (Lowered)
+            ctx.fillStyle = '#333333';
+            ctx.fillRect(400, 240, 180, 100);
+            ctx.strokeStyle = '#ff8533';
+            ctx.strokeRect(400, 240, 180, 100);
+
+            // Drop-Down Linkage
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(420, 210); ctx.lineTo(420, 240); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(560, 210); ctx.lineTo(560, 240); ctx.stroke();
+
+            // Telescoping Foot
+            ctx.fillStyle = '#ff6b00';
+            ctx.fillRect(480, 340, 12, 40);
+
+            // Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px sans-serif';
+            ctx.fillText('Schwerlastauszug (120kg)', 280, 195);
+            ctx.fillText('Absenkung (-25cm)', 440, 228);
+            ctx.fillText('Teleskop-Stützfuß', 500, 360);
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            init3D();
+        };
+
+        window.onresize = () => {
+            const container = document.getElementById('three-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        };
+    </script>
+</body>
+
+</html>

@@ -237,7 +237,6 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     // Materials
     const floorMat = new THREE.MeshStandardMaterial({ color: 0x2d1f1d, roughness: 0.8 }); // Dark wood vinyl
     const metalMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.3, metalness: 0.6 });
-    const hullMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15, roughness: 0.1 });
     const wallMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.7 });
     const benchMat = new THREE.MeshStandardMaterial({ color: 0x0f766e, roughness: 0.5 }); // Teal slate
     const cushionMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.9 });
@@ -247,7 +246,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const mattressMat = new THREE.MeshStandardMaterial({ color: 0xff6b00, roughness: 0.8 });
     const accentMat = new THREE.MeshStandardMaterial({ color: 0xff6b00 });
 
-    // 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR
+    // ── 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR ──
     const floorGroup = new THREE.Group();
 
     // Parametric Corrugated Sickenboden Floor Mesh
@@ -273,73 +272,94 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const wallPillars = createWallPillarsGroup();
     floorGroup.add(wallPillars);
 
-    // Wheel Arches (850 x 340 x 380 mm) at left & right rear
-    const archL = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.38, 0.85), metalMat);
-    archL.position.set(-0.69, 0.19, 0.5);
-    floorGroup.add(archL);
-
-    const archR = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.38, 0.85), metalMat);
-    archR.position.set(0.69, 0.19, 0.5);
-    floorGroup.add(archR);
-
     scene.add(floorGroup);
 
-    // 2. TRANSPARENT BODY HULL SHELL (MB Bremer 309D Profile with Grille, Headlights & Aerodynamic High Roof)
+    // ── 2. AUTHENTIC BODY HULL SHELL ──
+    // (Grille, headlights, GFK Hochdach, rain gutters, rear doors, wheels all included)
     const hullGroup = createBremerBodyShellGroup(vanState.driveSide, vanState.displayMode === 'wireframe');
     scene.add(hullGroup);
 
-    // 3. FRONT PARTITION WALL WITH SLIDING DOOR (Z = -1.2m)
+    // ── 3. FRONT PARTITION WALL WITH SLIDING DOOR (Z = -1.525m) ──
+    const partZ = -1.525; // Matches cargo front
     const partGroup = new THREE.Group();
 
     // Wall Left Panel
     const partLeft = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.80, 0.03), wallMat);
-    partLeft.position.set(-0.435, 0.9, -1.2);
+    partLeft.position.set(-0.435, 0.9, partZ);
     partGroup.add(partLeft);
 
     // Wall Right Header Panel
     const partTop = new THREE.Mesh(new THREE.BoxGeometry(0.87, 0.35, 0.03), wallMat);
-    partTop.position.set(0.425, 1.625, -1.2);
+    partTop.position.set(0.425, 1.625, partZ);
     partGroup.add(partTop);
 
     // Partition Sliding Door Panel (650 x 1450 mm)
     const partDoor = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.45, 0.02), accentMat);
-    partDoor.position.set(0.35, 0.725, -1.19);
+    partDoor.position.set(0.35, 0.725, partZ + 0.01);
     partitionDoorRef.current = partDoor;
     partGroup.add(partDoor);
 
     scene.add(partGroup);
 
-    // Exploded tracking
     explodedGroupsRef.current.push({
       group: partGroup,
       defaultPos: new THREE.Vector3(0, 0, 0),
       offsetPos: new THREE.Vector3(0, 0, -0.6),
     });
 
-    // 4. PASSENGER SLIDING DOOR CUTOUT & FRAME (+X at Z = -0.6m)
-    const slideDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.02, 1.40, 1.10), new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.35 }));
-    slideDoorFrame.position.set(0.86, 0.95, -0.6);
+    // ── 4. PASSENGER SLIDING DOOR (Animated, on right side for LHD) ──
+    const slideDoorMat = new THREE.MeshStandardMaterial({
+      color: 0x0284c7,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const slideDoorFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(0.02, 1.40, 1.10),
+      slideDoorMat
+    );
+    const slideSideX = vanState.driveSide === 'LHD' ? 0.96 : -0.96;
+    slideDoorFrame.position.set(slideSideX, 0.75, -0.15);
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
-    // 5. REAR HINGED DOUBLE DOORS (Z = +1.52m)
-    const rearGroup = new THREE.Group();
+    // ── 5. REAR HINGED SWING DOORS (Flügeltüren) ──
+    // These are animated as hinge-pivot groups. The body shell already renders
+    // the closed-state door panels, so we create transparent animated panels on top.
+    const rearZ = 1.525; // cargo rear
+    const doorW = 0.91;
+    const doorH = 1.27;
+    const rearDoorMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      transparent: true,
+      opacity: 0.6,
+      roughness: 0.7,
+    });
 
-    // Left Door
-    const rearL = new THREE.Mesh(new THREE.BoxGeometry(0.84, 1.70, 0.04), wallMat);
-    rearL.position.set(-0.42, 0.90, 1.52);
-    rearDoorLeftRef.current = rearL;
-    rearGroup.add(rearL);
+    // Left door pivot (hinged at -X edge)
+    const rearPivotL = new THREE.Group();
+    rearPivotL.position.set(-0.96, 0, rearZ + 0.02); // Hinge at left body edge
+    const rearDoorLMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(doorW, doorH, 0.035),
+      rearDoorMat
+    );
+    rearDoorLMesh.position.set(doorW / 2, doorH / 2 + 0.08, 0);
+    rearPivotL.add(rearDoorLMesh);
+    rearDoorLeftRef.current = rearPivotL as unknown as THREE.Mesh;
+    scene.add(rearPivotL);
 
-    // Right Door
-    const rearR = new THREE.Mesh(new THREE.BoxGeometry(0.84, 1.70, 0.04), wallMat);
-    rearR.position.set(0.42, 0.90, 1.52);
-    rearDoorRightRef.current = rearR;
-    rearGroup.add(rearR);
+    // Right door pivot (hinged at +X edge)
+    const rearPivotR = new THREE.Group();
+    rearPivotR.position.set(0.96, 0, rearZ + 0.02);
+    const rearDoorRMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(doorW, doorH, 0.035),
+      rearDoorMat
+    );
+    rearDoorRMesh.position.set(-doorW / 2, doorH / 2 + 0.08, 0);
+    rearPivotR.add(rearDoorRMesh);
+    rearDoorRightRef.current = rearPivotR as unknown as THREE.Mesh;
+    scene.add(rearPivotR);
 
-    scene.add(rearGroup);
-
-    // 6. L-LOUNGE BENCHES & TECH COMPARTMENTS (Left & Right)
+    // ── 6. L-LOUNGE BENCHES & TECH COMPARTMENTS ──
     const loungeGroup = new THREE.Group();
 
     // Left Bench (Houses 200Ah LiFePO4 & Victron MultiPlus)
@@ -380,7 +400,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(-0.4, 0, 0),
     });
 
-    // 7. OUTDOOR HEAVY-DUTY DROP KITCHEN (850 x 400 x 880 mm)
+    // ── 7. OUTDOOR HEAVY-DUTY DROP KITCHEN (850 x 400 x 880 mm) ──
     const kitchenGroup = new THREE.Group();
 
     const kitBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.88, 0.85), kitchenMat);
@@ -411,7 +431,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(1.10, 0.05, -0.65),
     });
 
-    // 8. ELECTRIC 4-POINT STRAP DROP-DOWN BED (1850 x 1400 mm)
+    // ── 8. ELECTRIC 4-POINT STRAP DROP-DOWN BED (1850 x 1400 mm) ──
     const bedGroup = new THREE.Group();
 
     // Alu Frame
@@ -441,7 +461,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     corners.forEach((c) => {
       const geo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(c[0], 1.82, 0.5 + c[1]),
+        new THREE.Vector3(c[0], 1.95, 0.5 + c[1]),
         new THREE.Vector3(c[0], 1.65, 0.5 + c[1]),
       ]);
       const line = new THREE.Line(geo, beltMat);
@@ -449,15 +469,15 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       beltLinesRef.current.push({ line, corner: c });
     });
 
-    // 9. OVERHEAD AIRCRAFT LOCKERS (Hängeschränke)
+    // ── 9. OVERHEAD AIRCRAFT LOCKERS (Hängeschränke) ──
     const lockerGroup = new THREE.Group();
 
     const lockerL = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.28, 1.80), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 }));
-    lockerL.position.set(-0.70, 1.62, -0.2);
+    lockerL.position.set(-0.70, 1.55, -0.2);
     lockerGroup.add(lockerL);
 
     const lockerR = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.28, 1.80), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 }));
-    lockerR.position.set(0.70, 1.62, -0.2);
+    lockerR.position.set(0.70, 1.55, -0.2);
     lockerGroup.add(lockerR);
 
     scene.add(lockerGroup);

@@ -3,6 +3,7 @@ import {
   createSickenbodenGeometry,
   createChassisFrameRailsGeometry,
   createWallPillarsGroup,
+  createBremerBodyShellGroup,
   calculateSickenbodenMetrics,
 } from './chassisGeometry';
 
@@ -38,6 +39,17 @@ describe('chassisGeometry utility', () => {
 
     expect(pillars).toBeDefined();
     expect(pillars.children.length).toBeGreaterThan(0);
+  });
+
+  it('creates 100% authentic Bremer body shell for LHD and RHD', () => {
+    const shellLHD = createBremerBodyShellGroup('LHD', false);
+    expect(shellLHD).toBeDefined();
+    // Should contain many children: walls, roof, cab, grille, headlights, doors, wheels...
+    expect(shellLHD.children.length).toBeGreaterThan(20);
+
+    const shellRHD = createBremerBodyShellGroup('RHD', true);
+    expect(shellRHD).toBeDefined();
+    expect(shellRHD.children.length).toBeGreaterThan(20);
   });
 
   it('calculates Sickenboden corrugation metrics accurately', () => {

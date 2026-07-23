@@ -5,7 +5,7 @@ import { VanState, MetricUnit, BOMItem, InteriorModule } from '../../types/van';
 import { INTERIOR_MODULES } from '../../data/modulesData';
 import { MASTER_BOM_ITEMS } from '../../data/bomData';
 import { formatDimension } from '../../utils/formatters';
-import { createSickenbodenGeometry, createChassisFrameRailsGeometry, createWallPillarsGroup, createBremerRoofGeometry, createDriverCabGroup } from '../../utils/chassisGeometry';
+import { createSickenbodenGeometry, createChassisFrameRailsGeometry, createWallPillarsGroup, createBremerBodyShellGroup } from '../../utils/chassisGeometry';
 
 interface Van3DCanvasProps {
   vanState: VanState;
@@ -284,26 +284,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     scene.add(floorGroup);
 
-    // 2. TRANSPARENT BODY HULL SHELL (MB Bremer 309D Profile)
-    const hullGroup = new THREE.Group();
-
-    // Lower Cargo Body (Up to Shoulder Height Y = 1.40m)
-    const hullMesh = new THREE.Mesh(new THREE.BoxGeometry(1.72, 1.40, 3.05), hullMat);
-    hullMesh.position.set(0, 0.70, 0);
-    hullMesh.userData = { isVehicleHull: true };
-    hullGroup.add(hullMesh);
-
-    // Authentic GFK High Roof Superstructure (Hochdach)
-    const roofGeo = createBremerRoofGeometry();
-    const roofMesh = new THREE.Mesh(roofGeo, hullMat);
-    roofMesh.position.set(0, 0, 0);
-    roofMesh.userData = { isVehicleHull: true };
-    hullGroup.add(roofMesh);
-
-    // Front Driver Cockpit (Bremer Short-Snout Nose & Windshield)
-    const driverCab = createDriverCabGroup(vanState.driveSide);
-    hullGroup.add(driverCab);
-
+    // 2. TRANSPARENT BODY HULL SHELL (MB Bremer 309D Profile with Grille, Headlights & Aerodynamic High Roof)
+    const hullGroup = createBremerBodyShellGroup(vanState.driveSide, vanState.displayMode === 'wireframe');
     scene.add(hullGroup);
 
     // 3. FRONT PARTITION WALL WITH SLIDING DOOR (Z = -1.2m)

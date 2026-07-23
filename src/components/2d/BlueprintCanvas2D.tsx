@@ -100,9 +100,9 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     }
 
     // Driver & Passenger Seats based on LHD vs RHD
-    // LHD (DE): Driver seat on Left (Top Y=150), Passenger on Right (Bottom Y=1100)
-    const driverY = driveSide === 'LHD' ? startY + 150 * scale : startY + 1100 * scale;
-    const passengerY = driveSide === 'LHD' ? startY + 1100 * scale : startY + 150 * scale;
+    // Heading LEFT: Left side of vehicle (Driver in LHD) = BOTTOM of canvas (Y=1100), Right side = TOP of canvas (Y=150)
+    const driverY = driveSide === 'LHD' ? startY + 1100 * scale : startY + 150 * scale;
+    const passengerY = driveSide === 'LHD' ? startY + 150 * scale : startY + 1100 * scale;
     const driverLabel = driveSide === 'LHD' ? 'Fahrersitz 🇩🇪 (LHD)' : 'Fahrersitz 🇬🇧 (RHD)';
     const passengerLabel = 'Beifahrersitz';
 
@@ -121,7 +121,7 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
       ctx.fillRect(startX, startY, 30, W * scale);
 
       // Door Passage (650 mm)
-      const doorY = driveSide === 'LHD' ? startY + 600 * scale : startY + 470 * scale;
+      const doorY = driveSide === 'LHD' ? startY + 470 * scale : startY + 600 * scale;
       ctx.fillStyle = '#ff6b00';
       ctx.fillRect(startX, doorY, 30, 650 * scale);
       ctx.fillStyle = '#ffffff';
@@ -135,9 +135,8 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
       drawWoodHatchPattern(ctx, startX + 1150 * scale, startY + 1220 * scale, 1900 * scale, 500 * scale, 'rgba(15, 118, 110, 0.4)');
     }
 
-    // Kitchen Unit (850 x 400 mm) - Located on Passenger / Sliding Door Side (Bottom for LHD, Top for RHD)
     if (layers.kitchen) {
-      const kitchenY = driveSide === 'LHD' ? startY + 1320 * scale : startY;
+      const kitchenY = driveSide === 'LHD' ? startY : startY + 1320 * scale;
       drawWoodHatchPattern(ctx, startX + 200 * scale, kitchenY, 850 * scale, 400 * scale, 'rgba(255, 107, 0, 0.4)');
     }
 

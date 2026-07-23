@@ -118,81 +118,184 @@ export function createWallPillarsGroup(cargoLengthMm: number = 3050, cargoHeight
 }
 
 /**
- * Generates Authentic Mercedes T1 Bremer GFK High-Roof (Hochdach) 3D Solid Shell Mesh
+ * Generates 100% Authentic Mercedes-Benz T1 Bremer (W602/309D/310D) 3D Body Shell Group
  */
-export function createBremerRoofGeometry(cargoLengthMm: number = 3050): THREE.BufferGeometry {
-  const L = cargoLengthMm / 1000;
-  const W = 1.72; // Full cargo width
-
-  // Create solid curved roof cap geometry (X-Y plane cross section, extruded along Z)
-  const shape = new THREE.Shape();
-  // Bottom left shoulder at Y = 1.40m
-  shape.moveTo(-W / 2, 1.40);
-  // Curve up to roof shoulder
-  shape.quadraticCurveTo(-W / 2, 1.75, -0.65, 1.85);
-  // Top flat crowned roof line
-  shape.lineTo(0.65, 1.85);
-  // Right roof shoulder curve
-  shape.quadraticCurveTo(W / 2, 1.75, W / 2, 1.40);
-  // Close top cap
-  shape.lineTo(W / 2, 1.42);
-  shape.quadraticCurveTo(W / 2 - 0.02, 1.77, 0.65, 1.87);
-  shape.lineTo(-0.65, 1.87);
-  shape.quadraticCurveTo(-W / 2 + 0.02, 1.77, -W / 2, 1.42);
-  shape.closePath();
-
-  const extrudeSettings: THREE.ExtrudeGeometryOptions = {
-    steps: 1,
-    depth: L,
-    bevelEnabled: false,
-  };
-
-  const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  geo.center();
-  return geo;
-}
-
-/**
- * Generates Front Driver Cockpit (Bremer Short-Snout Nose & Windshield) 3D Group
- */
-export function createDriverCabGroup(driveSide: 'LHD' | 'RHD' = 'LHD'): THREE.Group {
+export function createBremerBodyShellGroup(
+  driveSide: 'LHD' | 'RHD' = 'LHD',
+  isWireframe: boolean = false
+): THREE.Group {
   const group = new THREE.Group();
 
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.4, metalness: 0.5 });
-  const glassMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4, roughness: 0.1 });
-  const seatMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+  // Materials
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    roughness: 0.3,
+    metalness: 0.4,
+    transparent: true,
+    opacity: isWireframe ? 0.4 : 0.25,
+    wireframe: isWireframe,
+  });
 
-  // Bonnet / Engine Hood (Sloped 45 deg nose from Z = -2.40 to Z = -1.95)
+  const blackMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+  const chromeMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.1 });
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4, roughness: 0.1 });
+  const amberMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.2 });
+
+  const W = 1.72; // Width
+  const L = 3.05; // Cargo length
+
+  // 1. Lower Cargo Body Box (Side Walls up to Shoulder Y = 1.40m)
+  const lowerBodyGeo = new THREE.BoxGeometry(W, 1.40, L);
+  const lowerBodyMesh = new THREE.Mesh(lowerBodyGeo, bodyMat);
+  lowerBodyMesh.position.set(0, 0.70, 0);
+  lowerBodyMesh.userData = { isVehicleHull: true };
+  group.add(lowerBodyMesh);
+
+  // 2. Rain Gutters (Regenrinne) along left & right roof lines
+  const gutterGeo = new THREE.BoxGeometry(0.04, 0.03, L + 1.2);
+  const gutterMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8 });
+  const gutterL = new THREE.Mesh(gutterGeo, gutterMat);
+  gutterL.position.set(-W / 2 - 0.02, 1.40, -0.4);
+  group.add(gutterL);
+
+  const gutterR = new THREE.Mesh(gutterGeo, gutterMat);
+  gutterR.position.set(W / 2 + 0.02, 1.40, -0.4);
+  group.add(gutterR);
+
+  // 3. Aerodynamic GFK High Roof (Original Bremer Hochdach with Front Forehead Cap)
+  const roofGroup = new THREE.Group();
+
+  // Roof Cross Section Shape
+  const roofShape = new THREE.Shape();
+  roofShape.moveTo(-W / 2, 1.40);
+  roofShape.quadraticCurveTo(-W / 2, 1.75, -0.65, 1.85);
+  roofShape.lineTo(0.65, 1.85);
+  roofShape.quadraticCurveTo(W / 2, 1.75, W / 2, 1.40);
+  roofShape.lineTo(W / 2, 1.42);
+  roofShape.quadraticCurveTo(W / 2 - 0.02, 1.77, 0.65, 1.87);
+  roofShape.lineTo(-0.65, 1.87);
+  roofShape.quadraticCurveTo(-W / 2 + 0.02, 1.77, -W / 2, 1.42);
+  roofShape.closePath();
+
+  // Main Roof Extrusion over cargo area
+  const mainRoofGeo = new THREE.ExtrudeGeometry(roofShape, { steps: 1, depth: L, bevelEnabled: false });
+  mainRoofGeo.center();
+  const mainRoofMesh = new THREE.Mesh(mainRoofGeo, bodyMat);
+  mainRoofMesh.position.set(0, 0, 0);
+  mainRoofMesh.userData = { isVehicleHull: true };
+  roofGroup.add(mainRoofMesh);
+
+  // Aerodynamic Front Forehead Cap (Stirn / Dachüberstand over driver cab)
+  const foreheadShape = new THREE.Shape();
+  foreheadShape.moveTo(-W / 2 + 0.05, 1.45);
+  foreheadShape.quadraticCurveTo(-W / 2 + 0.05, 1.70, -0.60, 1.82);
+  foreheadShape.lineTo(0.60, 1.82);
+  foreheadShape.quadraticCurveTo(W / 2 - 0.05, 1.70, W / 2 - 0.05, 1.45);
+  foreheadShape.closePath();
+
+  const foreheadGeo = new THREE.ExtrudeGeometry(foreheadShape, { steps: 1, depth: 0.50, bevelEnabled: false });
+  foreheadGeo.center();
+  const foreheadMesh = new THREE.Mesh(foreheadGeo, bodyMat);
+  foreheadMesh.rotation.x = -Math.PI / 8; // Aerodynamic forward slope
+  foreheadMesh.position.set(0, 0.02, -L / 2 - 0.22);
+  foreheadMesh.userData = { isVehicleHull: true };
+  roofGroup.add(foreheadMesh);
+
+  // Longitudinal Roof Strengthening Ribs (3 parallel ribs on roof top)
+  const ribGeo = new THREE.BoxGeometry(0.04, 0.03, L - 0.4);
+  const ribMat = new THREE.MeshStandardMaterial({ color: 0x64748b });
+  const ribCenter = new THREE.Mesh(ribGeo, ribMat);
+  ribCenter.position.set(0, 1.87, 0);
+  roofGroup.add(ribCenter);
+
+  const ribLeft = new THREE.Mesh(ribGeo, ribMat);
+  ribLeft.position.set(-0.35, 1.86, 0);
+  roofGroup.add(ribLeft);
+
+  const ribRight = new THREE.Mesh(ribGeo, ribMat);
+  ribRight.position.set(0.35, 1.86, 0);
+  roofGroup.add(ribRight);
+
+  group.add(roofGroup);
+
+  // 4. Front Snout, Mercedes Grille & Round Headlights
+  const frontGroup = new THREE.Group();
+
+  // Bumper (Stoßstange)
+  const bumper = new THREE.Mesh(new THREE.BoxGeometry(1.76, 0.18, 0.15), blackMat);
+  bumper.position.set(0, 0.25, -2.55);
+  frontGroup.add(bumper);
+
+  // Grille Frame (Kühlergrill)
+  const grille = new THREE.Mesh(new THREE.BoxGeometry(1.48, 0.32, 0.05), blackMat);
+  grille.position.set(0, 0.55, -2.46);
+  frontGroup.add(grille);
+
+  // Mercedes Star Badge (Chrome Circle)
+  const star = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.02, 16), chromeMat);
+  star.rotation.x = Math.PI / 2;
+  star.position.set(0, 0.55, -2.48);
+  frontGroup.add(star);
+
+  // Dual Round Glass Headlights (Rundscheinwerfer)
+  const headlightGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16);
+  headlightGeo.rotateX(Math.PI / 2);
+
+  const headlightL = new THREE.Mesh(headlightGeo, chromeMat);
+  headlightL.position.set(-0.52, 0.55, -2.48);
+  frontGroup.add(headlightL);
+
+  const headlightR = new THREE.Mesh(headlightGeo, chromeMat);
+  headlightR.position.set(0.52, 0.55, -2.48);
+  frontGroup.add(headlightR);
+
+  // Corner Amber Turn Indicators
+  const indicatorL = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.12, 0.06), amberMat);
+  indicatorL.position.set(-0.76, 0.55, -2.44);
+  frontGroup.add(indicatorL);
+
+  const indicatorR = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.12, 0.06), amberMat);
+  indicatorR.position.set(0.76, 0.55, -2.44);
+  frontGroup.add(indicatorR);
+
+  // Slanted Hood Bonnet
   const hoodShape = new THREE.Shape();
-  hoodShape.moveTo(-0.85, 0.40);
-  hoodShape.lineTo(-0.85, 0.85);
-  hoodShape.lineTo(0.85, 0.85);
-  hoodShape.lineTo(0.85, 0.40);
+  hoodShape.moveTo(-0.84, 0.40);
+  hoodShape.lineTo(-0.84, 0.85);
+  hoodShape.lineTo(0.84, 0.85);
+  hoodShape.lineTo(0.84, 0.40);
   hoodShape.closePath();
 
-  const hoodGeo = new THREE.ExtrudeGeometry(hoodShape, { steps: 1, depth: 0.45, bevelEnabled: false });
+  const hoodGeo = new THREE.ExtrudeGeometry(hoodShape, { steps: 1, depth: 0.48, bevelEnabled: false });
   const hoodMesh = new THREE.Mesh(hoodGeo, bodyMat);
-  hoodMesh.position.set(0, 0, -2.40);
-  group.add(hoodMesh);
+  hoodMesh.position.set(0, 0, -2.42);
+  frontGroup.add(hoodMesh);
 
-  // Slanted Windshield (From Z = -1.95, Y = 0.85 to Z = -1.65, Y = 1.45)
-  const windGeo = new THREE.BoxGeometry(1.60, 0.70, 0.03);
-  const windMesh = new THREE.Mesh(windGeo, glassMat);
-  windMesh.rotation.x = -Math.PI / 4;
-  windMesh.position.set(0, 1.15, -1.80);
-  group.add(windMesh);
+  // Slanted Windshield Frame & Glass
+  const windFrame = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.68, 0.05), blackMat);
+  windFrame.rotation.x = -Math.PI / 4;
+  windFrame.position.set(0, 1.15, -1.80);
+  frontGroup.add(windFrame);
 
-  // Driver & Passenger Seats in Cockpit based on LHD vs RHD
+  const windGlass = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.60, 0.02), glassMat);
+  windGlass.rotation.x = -Math.PI / 4;
+  windGlass.position.set(0, 1.15, -1.81);
+  frontGroup.add(windGlass);
+
+  // Driver & Passenger Cockpit Seats based on LHD vs RHD
   const driverX = driveSide === 'LHD' ? -0.45 : 0.45;
   const passX = driveSide === 'LHD' ? 0.45 : -0.45;
+  const seatMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
 
   const seatDriver = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
-  seatDriver.position.set(driverX, 0.50, -1.55); // Driver seat
-  group.add(seatDriver);
+  seatDriver.position.set(driverX, 0.50, -1.55);
+  frontGroup.add(seatDriver);
 
   const seatPassenger = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
-  seatPassenger.position.set(passX, 0.50, -1.55); // Passenger seat
-  group.add(seatPassenger);
+  seatPassenger.position.set(passX, 0.50, -1.55);
+  frontGroup.add(seatPassenger);
+
+  group.add(frontGroup);
 
   return group;
 }

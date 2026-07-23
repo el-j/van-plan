@@ -26,7 +26,6 @@ export function createSickenbodenGeometry(config: SickenbodenConfig = {
   ribWidthMm: 45,
   ribPitchMm: 80,
 }): THREE.BufferGeometry {
-  // Convert mm to 3D Scene Meters (scale 1m = 1000mm)
   const L = config.lengthMm / 1000;
   const W = config.widthMm / 1000;
   const depth = config.ribDepthMm / 1000;
@@ -35,7 +34,6 @@ export function createSickenbodenGeometry(config: SickenbodenConfig = {
   const numRibs = Math.floor(config.widthMm / config.ribPitchMm);
   const shape = new THREE.Shape();
 
-  // Start at bottom left of floor profile (X axis cross section)
   shape.moveTo(-W / 2, 0);
 
   for (let i = 0; i < numRibs; i++) {
@@ -47,7 +45,7 @@ export function createSickenbodenGeometry(config: SickenbodenConfig = {
     shape.lineTo(startX + pitch, 0);
   }
   shape.lineTo(W / 2, 0);
-  shape.lineTo(W / 2, -0.003); // 3mm sheet metal thickness
+  shape.lineTo(W / 2, -0.003);
   shape.lineTo(-W / 2, -0.003);
   shape.closePath();
 
@@ -58,7 +56,6 @@ export function createSickenbodenGeometry(config: SickenbodenConfig = {
   };
 
   const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  // Center extrusion along Z axis
   geo.center();
   return geo;
 }
@@ -81,13 +78,11 @@ export function createChassisFrameRailsGeometry(config: FrameRailConfig = {
   const railGeo = new THREE.BoxGeometry(w, h, L);
   const railMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 });
 
-  // Left Frame Rail
   const railL = new THREE.Mesh(railGeo, railMat);
   railL.position.set(-spacing / 2, -h / 2 - 0.005, 0);
   railL.castShadow = true;
   group.add(railL);
 
-  // Right Frame Rail
   const railR = new THREE.Mesh(railGeo, railMat);
   railR.position.set(spacing / 2, -h / 2 - 0.005, 0);
   railR.castShadow = true;
@@ -103,23 +98,99 @@ export function createWallPillarsGroup(cargoLengthMm: number = 3050, cargoHeight
   const group = new THREE.Group();
   const L = cargoLengthMm / 1000;
   const H = cargoHeightMm / 1000;
-  const pillarGeo = new THREE.BoxGeometry(0.03, H, 0.04);
+  const pillarGeo = new THREE.BoxGeometry(0.03, H * 0.75, 0.04);
   const pillarMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6, roughness: 0.4 });
 
   const startZ = -L / 2 + 0.3;
   const endZ = L / 2 - 0.3;
 
   for (let z = startZ; z <= endZ; z += spacingMm / 1000) {
-    // Left Wall Pillar
     const pL = new THREE.Mesh(pillarGeo, pillarMat);
-    pL.position.set(-0.85, H / 2, z);
+    pL.position.set(-0.84, (H * 0.75) / 2, z);
     group.add(pL);
 
-    // Right Wall Pillar
     const pR = new THREE.Mesh(pillarGeo, pillarMat);
-    pR.position.set(0.85, H / 2, z);
+    pR.position.set(0.84, (H * 0.75) / 2, z);
     group.add(pR);
   }
+
+  return group;
+}
+
+/**
+ * Generates Authentic Mercedes T1 Bremer GFK High-Roof (Hochdach) 3D Geometry
+ */
+export function createBremerRoofGeometry(cargoLengthMm: number = 3050): THREE.BufferGeometry {
+  const L = cargoLengthMm / 1000;
+  const shape = new THREE.Shape();
+
+  // Authentic Bremer High-Roof Profile (X-Y Plane Cross Section)
+  // Starts at shoulder height Y = 1.40m, width 1.56m (X = -0.78 to +0.78)
+  shape.moveTo(-0.78, 1.40);
+  shape.quadraticCurveTo(-0.76, 1.72, -0.62, 1.82); // Curved roof shoulder
+  shape.lineTo(-0.35, 1.85); // Flat crowned top plate
+  shape.lineTo(0.35, 1.85);
+  shape.lineTo(0.62, 1.82);
+  shape.quadraticCurveTo(0.76, 1.72, 0.78, 1.40); // Right curved shoulder
+  shape.lineTo(0.84, 1.40);
+  shape.quadraticCurveTo(0.80, 1.76, 0.64, 1.86);
+  shape.lineTo(0.36, 1.88);
+  shape.lineTo(-0.36, 1.88);
+  shape.quadraticCurveTo(-0.80, 1.76, -0.84, 1.40);
+  shape.closePath();
+
+  const extrudeSettings: THREE.ExtrudeGeometryOptions = {
+    steps: 1,
+    depth: L,
+    bevelEnabled: false,
+  };
+
+  const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  // Center extrusion along Z axis
+  geo.center();
+  // Lift to proper Y position
+  geo.translate(0, 0, 0);
+  return geo;
+}
+
+/**
+ * Generates Front Driver Cockpit (Bremer Short-Snout Nose & Windshield) 3D Group
+ */
+export function createDriverCabGroup(): THREE.Group {
+  const group = new THREE.Group();
+
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.4, metalness: 0.5 });
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4, roughness: 0.1 });
+  const seatMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+
+  // Bonnet / Engine Hood (Sloped 45 deg nose from Z = -2.40 to Z = -1.95)
+  const hoodShape = new THREE.Shape();
+  hoodShape.moveTo(-0.85, 0.40);
+  hoodShape.lineTo(-0.85, 0.85);
+  hoodShape.lineTo(0.85, 0.85);
+  hoodShape.lineTo(0.85, 0.40);
+  hoodShape.closePath();
+
+  const hoodGeo = new THREE.ExtrudeGeometry(hoodShape, { steps: 1, depth: 0.45, bevelEnabled: false });
+  const hoodMesh = new THREE.Mesh(hoodGeo, bodyMat);
+  hoodMesh.position.set(0, 0, -2.40);
+  group.add(hoodMesh);
+
+  // Slanted Windshield (From Z = -1.95, Y = 0.85 to Z = -1.65, Y = 1.45)
+  const windGeo = new THREE.BoxGeometry(1.60, 0.70, 0.03);
+  const windMesh = new THREE.Mesh(windGeo, glassMat);
+  windMesh.rotation.x = -Math.PI / 4;
+  windMesh.position.set(0, 1.15, -1.80);
+  group.add(windMesh);
+
+  // Driver & Passenger Seats in Cockpit (LHD)
+  const seatL = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
+  seatL.position.set(-0.45, 0.50, -1.55); // Driver seat (Left)
+  group.add(seatL);
+
+  const seatR = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.48), seatMat);
+  seatR.position.set(0.45, 0.50, -1.55); // Passenger seat (Right)
+  group.add(seatR);
 
   return group;
 }

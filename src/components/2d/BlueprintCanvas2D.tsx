@@ -44,14 +44,34 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
 
   // View 1: Draufsicht (Floor Plan)
   const renderFloorPlan = (ctx: CanvasRenderingContext2D, width: number, height: number, unit: MetricUnit) => {
-    const scale = 0.22; // 0.22px per mm
-    const startX = 120;
-    const startY = 90;
+    const scale = 0.18; // 0.18px per mm
+    const startX = 180;
+    const startY = 100;
 
     const L = MB_BREMER_DIMENSIONS.cargoLength; // 3050
     const W = MB_BREMER_DIMENSIONS.cargoWidth; // 1720
 
-    // Vehicle Outer Body Frame (3050 x 1720)
+    // Driver Cockpit Front Bonnet (Short Snout Nose)
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(startX - 1200 * scale, startY + 100 * scale);
+    ctx.lineTo(startX, startY);
+    ctx.lineTo(startX, startY + W * scale);
+    ctx.lineTo(startX - 1200 * scale, startY + (W - 100) * scale);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Driver & Passenger Seats
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(startX - 800 * scale, startY + 150 * scale, 480 * scale, 480 * scale); // Driver (LHD)
+    ctx.fillRect(startX - 800 * scale, startY + 1100 * scale, 480 * scale, 480 * scale); // Passenger
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.fillText('Fahrersitz', startX - 780 * scale, startY + 380 * scale);
+    ctx.fillText('Beifahrersitz', startX - 780 * scale, startY + 1330 * scale);
+
+    // Vehicle Cargo Outer Body Frame (3050 x 1720 mm)
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 3;
     ctx.strokeRect(startX, startY, L * scale, W * scale);
@@ -116,7 +136,7 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     );
   };
 
-  // View 2: Längsschnitt (Side Elevation)
+  // View 2: Längsschnitt (Side Elevation with Driver Cab)
   const renderSideElevation = (
     ctx: CanvasRenderingContext2D,
     width: number,
@@ -125,29 +145,51 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     isBedLowered: boolean,
     isKitchenExtended: boolean
   ) => {
-    const scale = 0.22;
-    const startX = 120;
-    const startY = 60;
+    const scale = 0.18;
+    const startX = 180;
+    const startY = 80;
 
     const L = MB_BREMER_DIMENSIONS.cargoLength; // 3050
     const H = MB_BREMER_DIMENSIONS.cargoHeight; // 1850
 
-    // Vehicle Roof Contour (Mercedes T1 High Roof)
+    // Vehicle Outline with Driver Cockpit Snout Nose & GFK Hochdach
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(startX, startY + H * scale);
-    ctx.lineTo(startX, startY + 20);
-    ctx.quadraticCurveTo(startX + (L * scale) / 2, startY - 20, startY + L * scale, startY + 20);
+    // Bumper to Bonnet
+    ctx.moveTo(startX - 1200 * scale, startY + H * scale);
+    ctx.lineTo(startX - 1200 * scale, startY + (H - 500) * scale);
+    // Bonnet Slanted Nose (45 deg)
+    ctx.lineTo(startX - 700 * scale, startY + (H - 950) * scale);
+    // Windshield Slanted Glass (60 deg)
+    ctx.lineTo(startX - 300 * scale, startY + (H - 1550) * scale);
+    // Roof Line (Slight crown slope to rear)
+    ctx.lineTo(startX, startY);
+    ctx.lineTo(startX + L * scale, startY + 10);
+    // Rear Drop
     ctx.lineTo(startX + L * scale, startY + H * scale);
-    ctx.lineTo(startX, startY + H * scale);
+    // Floor Line
+    ctx.lineTo(startX - 1200 * scale, startY + H * scale);
     ctx.stroke();
 
-    // Floor Line
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(startX, startY + H * scale, L * scale, 15);
+    // Partition Wall at Z = -1200 mm
+    ctx.strokeStyle = '#ff6b00';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX, startY + H * scale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ff6b00';
+    ctx.font = '11px "JetBrains Mono", monospace';
+    ctx.fillText('Trennwand Z = -1200mm', startX + 10, startY + 40);
 
-    // Bench height (450 mm)
+    // Floor Line Heavy
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(startX - 1200 * scale, startY + H * scale, (L + 1200) * scale, 15);
+
+    // Benches (450 mm height)
     ctx.fillStyle = 'rgba(15, 118, 110, 0.5)';
     ctx.fillRect(startX + 1150 * scale, startY + (H - 450) * scale, 1900 * scale, 450 * scale);
 
@@ -158,13 +200,13 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     ctx.strokeStyle = '#ffffff';
     ctx.strokeRect(startX + 1150 * scale, bedY, 1850 * scale, 30);
 
-    // Straps / Gurte (4-Point)
+    // Straps / Gurte
     ctx.strokeStyle = '#ff6b00';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(startX + 1200 * scale, startY + 20);
+    ctx.moveTo(startX + 1200 * scale, startY + 10);
     ctx.lineTo(startX + 1200 * scale, bedY);
-    ctx.moveTo(startX + 2900 * scale, startY + 20);
+    ctx.moveTo(startX + 2900 * scale, startY + 10);
     ctx.lineTo(startX + 2900 * scale, bedY);
     ctx.stroke();
 
@@ -178,23 +220,34 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     );
   };
 
-  // View 3: Querschnitt (Rear Elevation)
+  // View 3: Authentic Querschnitt (Rear Elevation with GFK Hochdach Shoulder Curves)
   const renderRearElevation = (ctx: CanvasRenderingContext2D, width: number, height: number, unit: MetricUnit, isBedLowered: boolean) => {
-    const scale = 0.24;
-    const startX = 220;
-    const startY = 60;
+    const scale = 0.22;
+    const startX = 290;
+    const startY = 80;
 
     const W = MB_BREMER_DIMENSIONS.cargoWidth; // 1720
     const H = MB_BREMER_DIMENSIONS.cargoHeight; // 1850
 
-    // Body Contour
+    // Authentic Mercedes T1 Bremer Body Contour:
+    // Vertical/tapered side walls to shoulder height Y = 1420mm, curved shoulders to Y = 1850mm, flat crowned top plate
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 3;
     ctx.beginPath();
+    // Floor left corner
     ctx.moveTo(startX, startY + H * scale);
-    ctx.lineTo(startX, startY + 80);
-    ctx.quadraticCurveTo(startX + (W * scale) / 2, startY - 30, startY + W * scale, startY + 80);
+    // Tapered side wall to shoulder height (Y = 1420mm)
+    ctx.lineTo(startX + 80 * scale, startY + (H - 1420) * scale);
+    // Rounded GFK Roof Shoulder
+    ctx.quadraticCurveTo(startX + 120 * scale, startY + (H - 1750) * scale, startX + 250 * scale, startY);
+    // Flat Crowned Roof Top Plate (width 1220mm)
+    ctx.lineTo(startX + (W - 250) * scale, startY);
+    // Right Roof Shoulder
+    ctx.quadraticCurveTo(startX + (W - 120) * scale, startY + (H - 1750) * scale, startX + (W - 80) * scale, startY + (H - 1420) * scale);
+    // Right Tapered Side Wall down to floor
     ctx.lineTo(startX + W * scale, startY + H * scale);
+    // Floor Line
+    ctx.lineTo(startX, startY + H * scale);
     ctx.stroke();
 
     // Benches Bottom Left & Right
@@ -206,6 +259,8 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     const bedY = isBedLowered ? startY + (H - 550) * scale : startY + (H - 1650) * scale;
     ctx.fillStyle = '#ff6b00';
     ctx.fillRect(startX + 180 * scale, bedY, 1360 * scale, 35 * scale);
+    ctx.strokeStyle = '#ffffff';
+    ctx.strokeRect(startX + 180 * scale, bedY, 1360 * scale, 35 * scale);
 
     // Dimension lines
     drawCADDimensionLine(

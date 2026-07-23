@@ -30,6 +30,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn().mockImplementation((contextId: 
       fillRect: vi.fn(),
       strokeRect: vi.fn(),
       beginPath: vi.fn(),
+      closePath: vi.fn(),
       moveTo: vi.fn(),
       lineTo: vi.fn(),
       stroke: vi.fn(),

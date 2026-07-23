@@ -5,6 +5,7 @@ import { VanState, MetricUnit, BOMItem, InteriorModule } from '../../types/van';
 import { INTERIOR_MODULES } from '../../data/modulesData';
 import { MASTER_BOM_ITEMS } from '../../data/bomData';
 import { formatDimension } from '../../utils/formatters';
+import { createSickenbodenGeometry, createChassisFrameRailsGeometry, createWallPillarsGroup } from '../../utils/chassisGeometry';
 
 interface Van3DCanvasProps {
   vanState: VanState;
@@ -190,11 +191,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
           child.material.wireframe = vanState.displayMode === 'wireframe';
           child.material.opacity = vanState.displayMode === 'wireframe' ? 0.4 : 0.15;
         } else if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach((m) => (m.wireframe = vanState.displayMode === 'wireframe'));
-          } else {
-            child.material.wireframe = vanState.displayMode === 'wireframe';
-          }
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach((m) => (m.wireframe = vanState.displayMode === 'wireframe'));
         }
       }
     });
@@ -249,12 +247,31 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const mattressMat = new THREE.MeshStandardMaterial({ color: 0xff6b00, roughness: 0.8 });
     const accentMat = new THREE.MeshStandardMaterial({ color: 0xff6b00 });
 
-    // 1. VEHICLE CHASSIS & FLOOR (3050 x 1720 x 55 mm)
+    // 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR
     const floorGroup = new THREE.Group();
-    const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.055, 3.05), floorMat);
-    floorMesh.position.set(0, 0.0275, 0);
+
+    // Parametric Corrugated Sickenboden Floor Mesh
+    const sickenGeo = createSickenbodenGeometry();
+    const sickenMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6, roughness: 0.4 });
+    const sickenMesh = new THREE.Mesh(sickenGeo, sickenMat);
+    sickenMesh.rotation.x = Math.PI / 2;
+    sickenMesh.position.set(0, 0.015, 0);
+    sickenMesh.receiveShadow = true;
+    floorGroup.add(sickenMesh);
+
+    // 12mm Subfloor Wood Top Layer
+    const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.012, 3.05), floorMat);
+    floorMesh.position.set(0, 0.021, 0);
     floorMesh.receiveShadow = true;
     floorGroup.add(floorMesh);
+
+    // Underbody C-Channel Main Steel Frame Rails
+    const frameRails = createChassisFrameRailsGeometry();
+    floorGroup.add(frameRails);
+
+    // C/D Pillar Vertical Wall Structural Ribs
+    const wallPillars = createWallPillarsGroup();
+    floorGroup.add(wallPillars);
 
     // Wheel Arches (850 x 340 x 380 mm) at left & right rear
     const archL = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.38, 0.85), metalMat);

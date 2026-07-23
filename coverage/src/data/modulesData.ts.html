@@ -1,0 +1,1216 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/data/modulesData.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/data</a> modulesData.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { InteriorModule } from '../types/van';
+&nbsp;
+export const INTERIOR_MODULES: InteriorModule[] = [
+  {
+    id: 'subfloor',
+    name: 'Bodenaufbau, Entdröhnung &amp; Armaflex-Isolierung',
+    category: 'Chassis &amp; Subfloor',
+    shortDescription: '19mm Armaflex XG Isolierung, 2mm Alubutyl, 24x48mm Lärche-Unterkonstruktion &amp; 12mm Birke-Multiplex Bodenplatte.',
+    fullDescription: 'Grundsolider Thermo- und Akustik-Bodenaufbau. Verhindert Dröhnen beim Fahren und Kältebrücken vom Metallboden. Schwimmend verlegte Unterkonstruktion aus sibirischer Lärche (resistent gegen Feuchtigkeit) auf Alubutyl und 19mm Armaflex XG geschlossenzelligem Kautschuk.',
+    dimensionsMm: {
+      length: 3050,
+      width: 1720,
+      height: 55,
+    },
+    weightKg: 42.5,
+    totalCostEuro: 585.00,
+    materials: [
+      '19mm Armaflex XG selbstklebend (6m²)',
+      '2mm Reckhorn Alubutyl ABX (4m²)',
+      '24x48mm Sibirische Lärche Latten (18 lfm)',
+      '12mm Birke Multiplex BB/BB Qualitäts-Sperrholz (3 Platten 1500x3000mm)',
+      'SikaFlex 252 Konstruktionskleber (3 Kartuschen)',
+      'Heavy-Duty PVC/Vinyl Bodenbelag in Holzoptik (6m²)'
+    ],
+    highlights: [
+      'Vollständige Kältebrückenisolierung',
+      'Passgenaue Ausklinkung der Hinterradkästen (850x340mm)',
+      'Höhenverlust nur 55mm (Stehhöhe verbleibt bei 1795mm)',
+      'Extrem strapazierfähiger PVC-Belag mit Wasserschutz-Kanten'
+    ],
+    cutList: [
+      { id: 'sub-1', name: 'Bodenplatte Heck-Segment', material: '12mm Birke Multiplex', lengthMm: 1500, widthMm: 1720, thicknessMm: 12, quantity: 1, angleLeft: 90, angleRight: 90, notes: 'Radkasten-Ausschnitte 850x340mm an beiden Seiten' },
+      { id: 'sub-2', name: 'Bodenplatte Front-Segment', material: '12mm Birke Multiplex', lengthMm: 1550, widthMm: 1720, thicknessMm: 12, quantity: 1, angleLeft: 90, angleRight: 90, notes: 'Schiebetür-Kante gefälzt &amp; Schienen-Aussparung' },
+      { id: 'sub-3', name: 'Unterkonstruktions-Längslatten', material: '24x48mm Lärche', lengthMm: 2950, widthMm: 48, thicknessMm: 24, quantity: 5, angleLeft: 90, angleRight: 90 },
+      { id: 'sub-4', name: 'Unterkonstruktions-Querträger', material: '24x48mm Lärche', lengthMm: 1600, widthMm: 48, thicknessMm: 24, quantity: 6, angleLeft: 90, angleRight: 90 }
+    ],
+    assemblySteps: [
+      {
+        stepNumber: 1,
+        title: 'Reinigung &amp; Entrostung des Sickenbodens',
+        description: 'Laderaumboden gründlich mit Silikonentferner reinigen. Roststellen anschleifen und mit Brantho-Korrux 3in1 rostschutzgrundieren.',
+        toolsNeeded: ['Drahtbürste', 'Akkuschrauber', 'Silikonentferner', 'Pinsel'],
+        fastenersNeeded: ['Brantho-Korrux 3in1 Chassislack']
+      },
+      {
+        stepNumber: 2,
+        title: 'Entdröhnung mit Alubutyl &amp; Armaflex 19mm',
+        description: 'Alubutyl in den Sickenvertiefungen fest anrollen (ca. 40% Flächendeckung reicht). Anschließend Armaflex XG lückenlos verkleben.',
+        toolsNeeded: ['Andrückrolle', 'Cutter-Messer mit Abbrechklingen', 'Maßband'],
+        fastenersNeeded: ['Reckhorn ABX Alubutyl', 'Armaflex XG 19mm']
+      },
+      {
+        stepNumber: 3,
+        title: 'Verklebung der Lärche-Unterkonstruktion',
+        description: 'Holzlatten punktuell mit SikaFlex 252 auf die Metallrippen aufkleben (keine Schrauben durch den Fahrzeugboden!). 24 Std. aushärten lassen.',
+        toolsNeeded: ['Kartuschenpresse', 'Wasserwaage', 'Schraubzwingen'],
+        fastenersNeeded: ['SikaFlex 252 Klebekartuschen']
+      },
+      {
+        stepNumber: 4,
+        title: 'Multiplex-Platten einpassen &amp; Nuten stoßen',
+        description: 'Multiplex-Platten auf der Latten-Unterkonstruktion verschrauben (Edelstahlschrauben 3,5x35mm senken). Stöße mit Lamello/Nut verbinden.',
+        toolsNeeded: ['Stichsäge', 'Oberfräse', 'Akkuschrauber', 'Senker'],
+        fastenersNeeded: ['Edelstahlschrauben 3.5x35mm Torx']
+      }
+    ],
+    resellerLinks: [
+      { supplier: 'Hornbach', partName: 'Birke Multiplex BB/BB 12mm', partNumber: 'HO-MUX-12', url: 'https://www.hornbach.de', unitPrice: 38.50, currency: 'EUR', inStock: true },
+      { supplier: 'Tigerexped', partName: 'Armaflex XG 19mm selbstklebend 6m²', partNumber: 'AF-XG-19-6', url: 'https://tigerexped.de', unitPrice: 89.90, currency: 'EUR', inStock: true },
+      { supplier: 'Amazon', partName: 'Reckhorn ABX Alubutyl 2mm 4m²', partNumber: 'RK-ABX-4', url: 'https://www.amazon.de', unitPrice: 49.95, currency: 'EUR', inStock: true },
+      { supplier: 'SVB24', partName: 'SikaFlex 252 Konstruktionskleber Schwarz', partNumber: 'SVB-SK252', url: 'https://www.svb.de', unitPrice: 16.90, currency: 'EUR', inStock: true }
+    ]
+  },
+  {
+    id: 'bed',
+    name: 'Elektrisches 4-Punkt-Gurtband-Hubbett (1850 x 1400 mm)',
+    category: 'Bed &amp; Elevator',
+    shortDescription: 'Stufenlos verstellbares Längs-/Querbett mit Alu-Profilrahmen, 4-Punkt Sicherheitsgurtband &amp; 12V Rohrmotor-Antrieb.',
+    fullDescription: 'Maximaler Komfort ohne Platzverlust. Tagsüber schwebt das Bett direkt unter dem RTW-Hochdach (Stehhöhe 1650mm darunter bleibt frei). Nachts wird es per Taster auf die seitlichen Bänke abgesenkt (Liegefläche 1850 x 1400 mm). Keine störenden vertikalen Führungsschienen im Raum.',
+    dimensionsMm: {
+      length: 1850,
+      width: 1400,
+      height: 120,
+    },
+    weightKg: 36.0,
+    totalCostEuro: 745.00,
+    materials: [
+      'Alu Systemprofil Nut 8 30x30mm anodisiert (12m)',
+      '4x Automatik-Sicherheitsgurtbänder 50mm (Reißfestigkeit 2.500kg)',
+      '12V DC Tubular Windenmotor mit Schneckengetriebe 60Nm',
+      'Welle 60mm Achtkant Alu mit Umlenkrollen &amp; Lagern',
+      'Froli Travel Mobil Bettsystem / Tellerfedern',
+      'Kaltschaummatratze RG40 1850x1400x100mm (Zweiteilig klappbar)',
+      '4x Decken-Sicherheits-Arretierstifte (Mechanical Safety Pins)'
+    ],
+    highlights: [
+      'Volle Stehhöhe tagsüber unter dem hochgezogenen Bett',
+      'Kein Verkanten dank starrer 60mm Synchronwelle',
+      'Tragfähigkeit abgesenkt: 300 kg (liegt fest auf den Sitzbänken auf)',
+      'Integrierte Froli Tellerfedern für exzellente Unterlüftung'
+    ],
+    cutList: [
+      { id: 'bed-1', name: 'Alu-Rahmen Längsträger', material: '30x30mm Alu Nut 8', lengthMm: 1850, widthMm: 30, thicknessMm: 30, quantity: 2, angleLeft: 45, angleRight: 45 },
+      { id: 'bed-2', name: 'Alu-Rahmen Querträger', material: '30x30mm Alu Nut 8', lengthMm: 1340, widthMm: 30, thicknessMm: 30, quantity: 4, angleLeft: 90, angleRight: 90 },
+      { id: 'bed-3', name: 'Wellen-Synchronachse', material: 'SW60 Achtkant Stahl/Alu Welle', lengthMm: 1650, widthMm: 60, thicknessMm: 60, quantity: 1, angleLeft: 90, angleRight: 90 }
+    ],
+    assemblySteps: [
+      {
+        stepNumber: 1,
+        title: 'Zusammenbau des Alu-Profilrahmens',
+        description: '30x30 Nut 8 Profile mit Automatikverbindern und 90° Eckwinkeln zu einem Verwindungssteifen Rechteck 1850x1400mm verschrauben.',
+        toolsNeeded: ['Inbusschlüssel-Set 5mm', 'Drehmomentschlüssel', 'Winkel 90°'],
+        fastenersNeeded: ['Item Nut 8 Hammerkopfschrauben M6x15', 'Winkelverbinder 30x30']
+      },
+      {
+        stepNumber: 2,
+        title: 'Montage der Deckenlager &amp; Antriebswelle',
+        description: 'Achtkantwelle SW60 mit 4x Kugelgelagerten Gurt-Spulen am Mercedes-Dachspriegel mit Verstärkungsplatten M8 verbolzen.',
+        toolsNeeded: ['Bohrmaschine', 'Stufenbohrer', 'Schraubenschlüssel 13mm'],
+        fastenersNeeded: ['Schlossbolzen M8x60 Edelstahl', 'Kontermuttern M8']
+      },
+      {
+        stepNumber: 3,
+        title: 'Gurtband-Einfädelung &amp; Justierung',
+        description: '50mm Sicherheitsgurte an den 4 Ecken des Alu-Bettenrahmens befestigen und über die Deckenrollen exakt nivellieren.',
+        toolsNeeded: ['Wasserwaage 150cm', 'Gurtzange', 'Schraubendreher'],
+        fastenersNeeded: ['Gurt-Adapterplatten Nut 8', 'Edelstahl M6 Schrauben']
+      },
+      {
+        stepNumber: 4,
+        title: 'Froli Bettsystem &amp; Matratze installieren',
+        description: 'Froli Tellerfedern im Raster auf dem Alu-Rahmen einklicken. 100mm Kaltschaummatratze einlegen.',
+        toolsNeeded: ['Handkraft'],
+        fastenersNeeded: ['Froli Kreuzfuß-Elemente']
+      }
+    ],
+    resellerLinks: [
+      { supplier: 'Dold Mechatronik', partName: 'Aluprofil 30x30 B-Typ Nut 8 (lfm)', partNumber: 'DM-ALU-3030', url: 'https://www.dold-mechatronik.de', unitPrice: 8.90, currency: 'EUR', inStock: true },
+      { supplier: 'Amazon', partName: '12V Rohrmotor Windenantrieb 60Nm', partNumber: 'AMZ-MOT-12V60', url: 'https://www.amazon.de', unitPrice: 139.00, currency: 'EUR', inStock: true },
+      { supplier: 'Obelink', partName: 'Froli Travel Bettsystem Grundset', partNumber: 'OB-FROLI-TR', url: 'https://www.obelink.de', unitPrice: 119.00, currency: 'EUR', inStock: true },
+      { supplier: 'Fraron', partName: 'Sicherheitsgurtband 50mm Schwarz 10m', partNumber: 'FR-GURT-50', url: 'https://www.fraron.de', unitPrice: 24.50, currency: 'EUR', inStock: true }
+    ]
+  },
+  {
+    id: 'kitchen',
+    name: 'Schwerlast-Auszugsküche mit Parallelogramm-Absenkung',
+    category: 'Kitchen &amp; Outdoor',
+    shortDescription: 'Schlanker Küchenblock (850 x 400 mm) an der Schiebetür mit 120kg Auszügen &amp; 25cm Outdoor-Absenkung.',
+    fullDescription: 'Gelöster Ergonomie-Konflikt: Der Ladeboden des T1 liegt ca. 50 cm über dem Boden. Diese Küche glidet auf 1000mm Schwerlastauszügen aus der Schiebetür heraus und senkt sich über eine Hebel-Mechanik um 25 cm ab – perfekte 90 cm Steh-Kochhöhe im Freien!',
+    dimensionsMm: {
+      length: 850,
+      width: 400,
+      height: 880,
+    },
+    weightKg: 38.0,
+    totalCostEuro: 890.00,
+    materials: [
+      '15mm Pappel-Multiplex HPL-beschichtet Anthrazit (2 Platten 1250x2500mm)',
+      'Heavy-Duty Teleskopschienen 1000mm 120kg mit Verriegelung',
+      'Parallelogramm-Hebelsegment aus 5mm Edelstahl Flachgut',
+      'Teleskopierbarer Aluminium Stützfuß mit Gummifuß (Höhenverstellbar 40-75cm)',
+      'Dometic 2-Flammen Gaskocher mit Spülbecken-Kombination (HSG 2445)',
+      '12V Weitwinkel-Wasserhahn klappbar Comet Florence',
+      '2x 19 Liter Weithals-Kanister (Frischwasser / Grauwasser)'
+    ],
+    highlights: [
+      'Indoor- und Outdoor kochen im selben Modul',
+      'Ergonomische 90cm Arbeitshöhe draußen durch Absenkung (-250mm)',
+      'Integriertes Gasfach für 5kg Propangasflasche mit Gaskasten-Entlüftung',
+      'Teleskopstütze garantiert 100% Wackelfreiheit auf unebenem Boden'
+    ],
+    cutList: [
+      { id: 'kit-1', name: 'Küchenkorpus Seitenteile', material: '15mm HPL Pappel-Multiplex', lengthMm: 850, widthMm: 380, thicknessMm: 15, quantity: 2, angleLeft: 90, angleRight: 90 },
+      { id: 'kit-2', name: 'Küchen-Arbeitsplatte HPL', material: '18mm Eiche Massivleimholz', lengthMm: 850, widthMm: 400, thicknessMm: 18, quantity: 1, angleLeft: 90, angleRight: 90, notes: 'Spülen-Ausschnitt 420x320mm' },
+      { id: 'kit-3', name: 'Schwerlast-Montage-Schlitten', material: '15mm Birke Multiplex', lengthMm: 950, widthMm: 390, thicknessMm: 15, quantity: 1, angleLeft: 90, angleRight: 90 },
+      { id: 'kit-4', name: 'Besteck- &amp; Gas-Schublade', material: '12mm Pappel Multiplex', lengthMm: 380, widthMm: 350, thicknessMm: 12, quantity: 2, angleLeft: 90, angleRight: 90 }
+    ],
+    assemblySteps: [
+      {
+        stepNumber: 1,
+        title: 'Korpusbau mit Pocket Holes (Kreg Jig)',
+        description: 'Pappel-Multiplex-Platten präzise zuschneiden und mit Kreg Taschenbohrungen unsichtbar verschrauben.',
+        toolsNeeded: ['Kreg Jig K4', 'Akkuschrauber', 'Schraubzwingen'],
+        fastenersNeeded: ['Kreg Pocket Screws 31mm Edelschrauben']
+      },
+      {
+        stepNumber: 2,
+        title: 'Montage der 120kg Schwerlastauszüge',
+        description: 'Teleskopschienen exakt parallel an der Unterkonstruktion der Sitzbank / Bodenschienen ausrichten.',
+        toolsNeeded: ['Wasserwaage', 'Bohrmaschine', 'Schraubenschlüssel 10mm'],
+        fastenersNeeded: ['M6x20mm Linsenkopfschrauben mit Stoppmuttern']
+      },
+      {
+        stepNumber: 3,
+        title: 'Parallelogramm-Hebelsegment befestigen',
+        description: 'Vier Edelstahl-Gelenkarme mit Bronze-Gleitlagern montieren für die sanfte 25cm Absenkbewegung.',
+        toolsNeeded: ['Imbusschlüssel 6mm', 'Drehmomentschlüssel'],
+        fastenersNeeded: ['M8 Edelstahl Passschrauben + Sinterbronze Büchsen']
+      },
+      {
+        stepNumber: 4,
+        title: 'Installation Gas &amp; Wasser',
+        description: 'Gaskocher einbauen, 8mm Ermeto-Rohr zum Gaskasten legen. 12V Tauchpumpe an Frischwasserkanister anschließen.',
+        toolsNeeded: ['Rohrbiegezange', 'Maulschlüssel 14/17mm', 'Lecksuchspray'],
+        fastenersNeeded: ['8mm Schneidringverschraubung', 'Gasschlauch 40cm']
+      }
+    ],
+    resellerLinks: [
+      { supplier: 'SVB24', partName: 'Dometic HSG 2445 Kocher-Spülen-Kombi', partNumber: 'SVB-DOM-2445', url: 'https://www.svb.de', unitPrice: 349.00, currency: 'EUR', inStock: true },
+      { supplier: 'Tigerexped', partName: 'Schwerlastauszug 1000mm 120kg Lock-in/out', partNumber: 'TE-SL-1000', url: 'https://tigerexped.de', unitPrice: 129.00, currency: 'EUR', inStock: true },
+      { supplier: 'Hornbach', partName: 'Eiche Leimholz-Arbeitsplatte 18mm', partNumber: 'HO-EICHE-18', url: 'https://www.hornbach.de', unitPrice: 42.00, currency: 'EUR', inStock: true },
+      { supplier: 'Campingwagner', partName: 'Comet Florence Klapp-Wasserhahn 12V', partNumber: 'CW-COMET-FLO', url: 'https://www.campingwagner.de', unitPrice: 48.50, currency: 'EUR', inStock: true }
+    ]
+  },
+  {
+    id: 'lounge',
+    name: 'Sitzgruppe / L-Lounge mit Technikboxen &amp; Lagun-Tisch',
+    category: 'Seating &amp; Lounge',
+    shortDescription: 'Zwei Längssitzbänke (1900 x 500 mm) als Tages-Lounge, Stauraum &amp; Gehäuse für Batterie/Standheizung.',
+    fullDescription: 'Duo-Funktions-Sitzlandschaft. Die linke Bank nimmt die kompletten 12V/230V Elektrik-Komponenten auf (Victron MultiPlus, 200Ah LiFePO4). Die rechte Bank beherbergt die Autoterm Dieselheizung und den 80L Frischwassertank. Der drehbare Lagun-Tisch schwenkt flexibel.',
+    dimensionsMm: {
+      length: 1900,
+      width: 1540,
+      height: 450,
+    },
+    weightKg: 52.0,
+    totalCostEuro: 620.00,
+    materials: [
+      '15mm Paulownia / Pappel Multiplex Leichtbau (4 Platten)',
+      'Lagun Drehtisch-Gestell Original Alu eloxiert',
+      '700x500x18mm Eiche Tischplatte',
+      'High-Density Schaumstoff-Polster RG35 80mm mit Cord-Bezug Anthrazit',
+      '4x Gasdruckdämpfer 100N für Sitzbankdeckel-Öffnung',
+      'Klavierband Edelstahl 1800mm'
+    ],
+    highlights: [
+      '600 mm freier Durchgangs-Mittelgang von Heck bis Trennwand',
+      'Schall- und wärmeisolierter Bereich für Autoterm Standheizung',
+      'Integriertes 12V Belüftungssystem für Batterieraum',
+      'Sitzbänke dienen als feste Auflagefläche für das abgesenkte Hubbett'
+    ],
+    cutList: [
+      { id: 'lou-1', name: 'Sitzbank Links Frontblende', material: '15mm Pappel Multiplex', lengthMm: 1900, widthMm: 430, thicknessMm: 15, quantity: 1, angleLeft: 90, angleRight: 90 },
+      { id: 'lou-2', name: 'Sitzbank Rechts Frontblende', material: '15mm Pappel Multiplex', lengthMm: 1900, widthMm: 430, thicknessMm: 15, quantity: 1, angleLeft: 90, angleRight: 90 },
+      { id: 'lou-3', name: 'Sitzbank Deckel mit Klapp-Scharnier', material: '15mm Birke Multiplex', lengthMm: 1880, widthMm: 480, thicknessMm: 15, quantity: 2, angleLeft: 90, angleRight: 90 },
+      { id: 'lou-4', name: 'Lagun Tischplatte Eiche', material: '18mm Eiche Leimholz', lengthMm: 700, widthMm: 500, thicknessMm: 18, quantity: 1, angleLeft: 90, angleRight: 90 }
+    ],
+    assemblySteps: [
+      {
+        stepNumber: 1,
+        title: 'Rahmenbau Sitzbänke &amp; Wandverankerung',
+        description: 'Korpus aus 15mm Pappel-Multiplex mit Alu-Eckwinkeln bauen. Direkt an den Wandverstärkungsrippen des T1 verschrauben.',
+        toolsNeeded: ['Akkuschrauber', 'Nietzange / Nietmuttern', 'Wasserwaage'],
+        fastenersNeeded: ['M6 Blindnietmuttern Edelstahl', 'M6x25 Sechskantschrauben']
+      },
+      {
+        stepNumber: 2,
+        title: 'Montage der Deckel mit Gasdruckdämpfern',
+        description: 'Sitzbankdeckel mit Klavierband anschlagen und 100N Gasdruckfedern für einfaches Aufhalten montieren.',
+        toolsNeeded: ['Schraubendreher PZ2', 'Bohrer 3mm'],
+        fastenersNeeded: ['Edelstahl Spannkopfschrauben 3.5x16mm', 'Gasdruckfeder-Kugelköpfe']
+      },
+      {
+        stepNumber: 3,
+        title: 'Lagun Drehtisch-Halterung anbringen',
+        description: 'Lagun Aluminium-Befestigungsplatte mit Konterplatte an der linken Sitzbankwand bolzen.',
+        toolsNeeded: ['Bohrmaschine 8.5mm', 'Schraubenschlüssel 13mm'],
+        fastenersNeeded: ['M8x50mm Edelstahl Durchgangsbolzen']
+      }
+    ],
+    resellerLinks: [
+      { supplier: 'Tigerexped', partName: 'Lagun Drehtischgestell Original', partNumber: 'TE-LAGUN-SYS', url: 'https://tigerexped.de', unitPrice: 189.00, currency: 'EUR', inStock: true },
+      { supplier: 'Hornbach', partName: 'Pappel Multiplex 15mm 1250x2500', partNumber: 'HO-PAP-15', url: 'https://www.hornbach.de', unitPrice: 32.00, currency: 'EUR', inStock: true },
+      { supplier: 'Amazon', partName: 'Gasdruckdämpfer 100N 4er-Set', partNumber: 'AMZ-GAS-100N', url: 'https://www.amazon.de', unitPrice: 19.90, currency: 'EUR', inStock: true }
+    ]
+  },
+  {
+    id: 'partition',
+    name: 'Trennwand mit Schiebetür &amp; Decken-Hängeschränke',
+    category: 'Partition &amp; Storage',
+    shortDescription: 'Original T1 RTW Schiebetür-Trennwand (650mm Durchgang) &amp; aerodynamische Dachschränke.',
+    fullDescription: 'Erhält den ikonischen Durchstieg vom Cockpit in den Wohnraum. Die Trennwand trennt Fahrerkabine vom Wohnbereich thermisch ab. Oberhalb laufen 6 flache Hängeschränke (Aircraft Lockers) entlang der RTW-Hochdachkurve.',
+    dimensionsMm: {
+      length: 1720,
+      width: 300,
+      height: 1800,
+    },
+    weightKg: 29.0,
+    totalCostEuro: 430.00,
+    materials: [
+      '12mm &amp; 15mm Paulownia Leichtbau-Holz (Extrem leicht: 300kg/m³)',
+      'Blum Aventos HK-XS Hochklapp-Scharniere mit Soft-Close',
+      'Push-Lock Möbel-Druckschlösser in Matt-Chrom',
+      'Original Bremer Schiebetür-Laufrolle &amp; Dichtung'
+    ],
+    highlights: [
+      'Full 650mm freier Durchgang ins Fahrerhaus',
+      'Aerodynamisch an die RTW Hochdachkontur angepasste Schränke',
+      'Push-Lock Verriegelung verhindert Aufspringen während der Fahrt'
+    ],
+    cutList: [
+      { id: 'par-1', name: 'Hängeschrank Bodenblende Links', material: '12mm Paulownia', lengthMm: 1400, widthMm: 300, thicknessMm: 12, quantity: 1, angleLeft: 90, angleRight: 90 },
+      { id: 'par-2', name: 'Hängeschrank Bodenblende Rechts', material: '12mm Paulownia', lengthMm: 1400, widthMm: 300, thicknessMm: 12, quantity: 1, angleLeft: 90, angleRight: 90 },
+      { id: 'par-3', name: 'Schrank-Klappen mit Dach-Schräge', material: '12mm Paulownia HPL', lengthMm: 450, widthMm: 280, thicknessMm: 12, quantity: 6, angleLeft: 12, angleRight: 12 }
+    ],
+    assemblySteps: [
+      {
+        stepNumber: 1,
+        title: 'Schablone der RTW Hochdachkontur nehmen',
+        description: 'Mit Konturenlehre die Rundung der oberen Dachkante abgreifen und auf die Paulownia-Seitenwände übertragen.',
+        toolsNeeded: ['Konturenlehre', 'Stichsäge mit Feinschnitt-Blatt', 'Schleifklotz'],
+        fastenersNeeded: []
+      },
+      {
+        stepNumber: 2,
+        title: 'Montage der Blum Klappscharniere',
+        description: 'Aventos HK-XS Scharniere einbohren (35mm Forstnerbohrer) und Soft-Close Dämpfung einstellen.',
+        toolsNeeded: ['Oberfräse / Forstnerbohrer 35mm', 'Akkuschrauber'],
+        fastenersNeeded: ['Blum 3,5x15mm Holzschrauben']
+      }
+    ],
+    resellerLinks: [
+      { supplier: 'Bauhaus', partName: 'Paulownia Leimholz 12mm 300x1200', partNumber: 'BH-PAUL-12', url: 'https://www.bauhaus.info', unitPrice: 14.50, currency: 'EUR', inStock: true },
+      { supplier: 'Amazon', partName: 'Blum Aventos HK-XS Klappenbeschlag-Set', partNumber: 'AMZ-BLUM-HKXS', url: 'https://www.amazon.de', unitPrice: 38.00, currency: 'EUR', inStock: true }
+    ]
+  },
+  {
+    id: 'toilet',
+    name: 'Off-Grid Trockentrenntoilette (Trelino / Kildwick Auszug)',
+    category: 'Sanitation &amp; Dry Toilet',
+    shortDescription: 'Versteckter Schwerlastauszug in der Sitzbank mit geruchsfreiem Trenneinsatz &amp; 12V Lüfter.',
+    fullDescription: 'Autarke Sanitärlösung ohne Chemie. Die Trockentrenntoilette glidet bei Bedarf auf 80kg Soft-Close Auszügen aus der vorderen Sitzbank heraus. Flüssig- und Feststoff werden geruchlos getrennt.',
+    dimensionsMm: {
+      length: 450,
+      width: 380,
+      height: 410,
+    },
+    weightKg: 11.5,
+    totalCostEuro: 390.00,
+    materials: [
+      'Trelino Evo M Trenneinsatz mit Spritzschutz',
+      '10L Urinkanister mit Membran-Geruchsverschluss',
+      '11L Feststoffbehälter recyclebar',
+      '12V Silent-PC Lüfter Noctua NF-A4x10 mit Aktivkohlefilter',
+      'Soft-Close Vollauszüge 450mm 80kg'
+    ],
+    highlights: [
+      '100% Geruchsfrei durch permanenten 12V Unterdruck-Lüfter (nur 0,6W Verbrauch)',
+      'Kompakt im Möbel integriert – vollkommen unsichtbar bei Nichtgebrauch',
+      'Bis zu 10 Tage Autarkie für 2 Personen'
+    ],
+    cutList: [
+      { id: 'toi-1', name: 'Toiletten-Auszugsgehäuse', material: '12mm Birke Multiplex', lengthMm: 460, widthMm: 390, thicknessMm: 12, quantity: 1, angleLeft: 90, angleRight: 90 },
+      { id: 'toi-2', name: 'Deckelplatte mit Trenneinsatz-Ausfräsung', material: '15mm Birke Multiplex', lengthMm: 450, widthMm: 380, thicknessMm: 15, quantity: 1, angleLeft: 90, angleRight: 90 }
+    ],
+    assemblySteps: [
+      {
+        stepNumber: 1,
+        title: 'Einbau der Soft-Close Teleskopschienen',
+        description: 'Schienen am Boden der Sitzbank ausrichten und Auszugsbox verschrauben.',
+        toolsNeeded: ['Akkuschrauber', 'Winkel'],
+        fastenersNeeded: ['M4x16mm Linsenkopfschrauben']
+      },
+      {
+        stepNumber: 2,
+        title: 'Entlüftungsschlauch nach außen führen',
+        description: '38mm Flexschlauch durch die Fahrzeug-Seitenwand / Boden nach außen führen mit Insektenschutz-Gitter.',
+        toolsNeeded: ['Lochsäge 40mm', 'Dekalin Dichtmasse'],
+        fastenersNeeded: ['Edelstahl Lüftungs-Rosette']
+      }
+    ],
+    resellerLinks: [
+      { supplier: 'Tigerexped', partName: 'Trelino Evo M Trockentrenntoilette White', partNumber: 'TE-TREL-EVO', url: 'https://tigerexped.de', unitPrice: 329.00, currency: 'EUR', inStock: true },
+      { supplier: 'Amazon', partName: 'Noctua NF-A4x10 12V Silent Lüfter', partNumber: 'AMZ-NOC-40', url: 'https://www.amazon.de', unitPrice: 15.90, currency: 'EUR', inStock: true }
+    ]
+  }
+];
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-07-23T08:10:34.946Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
+</html>
+    

@@ -17,22 +17,23 @@ export interface FrameRailConfig {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
- *  MB T1 Bremer (W601/W602) 309D/310D RTW Hochdach – 100% Precision Geometry
+ *  MB T1 Bremer (W601/W602) 309D/310D RTW Hochdach – Perfect 3D Reconstruction
  *
- *  All values in METERS (Three.js scene units = 1 meter)
+ *  Coordinate System (Meters):
+ *    Ground: Y = 0.00m
+ *    Wheel Axles: Y = 0.35m (wheel radius = 0.35m, resting on ground Y=0)
+ *    Underbody Chassis Frame: Y = 0.43m .. 0.53m (strictly UNDER cargo floor)
+ *    Cargo Floor Plate: Y = 0.55m
+ *    Side Wall Gutter Line: Y = 1.95m
+ *    GFK High Roof Ceiling: Y = 2.40m (Interior Stehhöhe = 1.85m = 1850mm)
+ *    GFK High Roof Peak: Y = 2.55m (Gesamthöhe = 2.55m = 2550mm)
  *
- *  Ground level: Y = 0.00m
- *  Wheel radius: R = 0.35m (axles at Y = 0.35m)
- *  Cargo floor level: Y = 0.55m
- *  Side wall gutter line: Y = 1.95m
- *  Interior ceiling peak: Y = 2.40m (Stehhöhe = 1.85m = 1850mm)
- *  Exterior roof peak: Y = 2.55m (Gesamthöhe = 2.55m = 2550mm)
- *
- *  Cargo Box Bounds (Z-axis):
- *    Cargo rear: Z = +1.525m (+3050mm / 2)
- *    Cargo front (Partition): Z = -1.525m (-3050mm / 2)
- *    Driver Cab: Z = -1.525m to -2.725m (-1200mm depth)
- *    Bonnet & Front Grille: Z = -2.725m to -3.275m (-550mm depth)
+ *  Z-Axis Bounds:
+ *    Cargo Rear Doors: Z = +1.525m (+3050mm / 2)
+ *    Partition Wall: Z = -1.525m (-3050mm / 2)
+ *    Cockpit Seats: Z = -2.000m (0.475m clearance in front of partition)
+ *    Dashboard / Windshield Base: Z = -2.450m
+ *    Front Grille / Bumper: Z = -2.850m
  * ───────────────────────────────────────────────────────────────────────────── */
 
 export const BREMER_GEOMETRY_SPECS = {
@@ -46,14 +47,15 @@ export const BREMER_GEOMETRY_SPECS = {
   cargoLength: 3.05,
   cargoWidth: 1.72,
   bodyWidth: 1.92,
-  cabLength: 1.20,
-  bonnetLength: 0.55,
-  frontAxleZ: -2.35,
+  cabLength: 1.00,
+  bonnetLength: 0.40,
+  frontAxleZ: -2.15,
   rearAxleZ: 1.00,
 };
 
 /**
  * Generates 3D Parametric Mesh for Mercedes 309D Sickenboden (Corrugated Metal Cargo Floor)
+ * Flat in horizontal X-Z plane at cargo floor level.
  */
 export function createSickenbodenGeometry(config: SickenbodenConfig = {
   lengthMm: MB_BREMER_DIMENSIONS.cargoLength,
@@ -104,19 +106,19 @@ export function createChassisFrameRailsGeometry(config: FrameRailConfig = {
   const h = config.railHeightMm / 1000;
   const spacing = config.spacingCenterMm / 1000;
 
-  const railGeo = new THREE.BoxGeometry(w, h, L + 1.2);
+  const railGeo = new THREE.BoxGeometry(w, h, L + 1.0);
   const railMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 });
 
-  // Placed under floor Y=0.55m (rail top touches Y=0.54m)
+  // Placed under floor Y=0.55m (rail top at Y=0.53m)
   const railY = 0.55 - h / 2 - 0.005;
 
   const railL = new THREE.Mesh(railGeo, railMat);
-  railL.position.set(-spacing / 2, railY, -0.4);
+  railL.position.set(-spacing / 2, railY, -0.3);
   railL.castShadow = true;
   group.add(railL);
 
   const railR = new THREE.Mesh(railGeo, railMat);
-  railR.position.set(spacing / 2, railY, -0.4);
+  railR.position.set(spacing / 2, railY, -0.3);
   railR.castShadow = true;
   group.add(railR);
 
@@ -155,7 +157,6 @@ export function createWallPillarsGroup(
 
 /**
  * Generates 100% Authentic Mercedes-Benz T1 Bremer (W602/309D/310D) 3D Body Shell Group
- * Ground at Y=0, Cargo floor at Y=0.55m, Roof Peak at Y=2.55m
  */
 export function createBremerBodyShellGroup(
   driveSide: 'LHD' | 'RHD' = 'LHD',
@@ -217,8 +218,8 @@ export function createBremerBodyShellGroup(
 
   const cargoZFront = -L / 2; // -1.525m
   const cargoZRear = L / 2; // +1.525m
-  const cabZFront = cargoZFront - BREMER_GEOMETRY_SPECS.cabLength; // -2.725m
-  const bumperZ = cabZFront - BREMER_GEOMETRY_SPECS.bonnetLength; // -3.275m
+  const cabZFront = cargoZFront - BREMER_GEOMETRY_SPECS.cabLength; // -2.525m
+  const bumperZ = cabZFront - BREMER_GEOMETRY_SPECS.bonnetLength; // -2.925m
 
   // 1. CARGO SIDE WALLS (Y = 0.55m to 1.95m)
   const sideWallGeo = new THREE.BoxGeometry(0.02, 1.40, L);
@@ -276,55 +277,67 @@ export function createBremerBodyShellGroup(
   group.add(rearRoofCap);
 
   // 3. RAIN GUTTERS (Regenrinne Y = 1.95m)
-  const gutterGeo = new THREE.BoxGeometry(0.035, 0.025, L + 1.2);
+  const gutterGeo = new THREE.BoxGeometry(0.035, 0.025, L + 1.0);
   const gutterMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.75 });
   const gutterL = new THREE.Mesh(gutterGeo, gutterMat);
-  gutterL.position.set(-HW - 0.018, gutterY, -0.4);
+  gutterL.position.set(-HW - 0.018, gutterY, -0.3);
   group.add(gutterL);
   const gutterR = new THREE.Mesh(gutterGeo, gutterMat);
-  gutterR.position.set(HW + 0.018, gutterY, -0.4);
+  gutterR.position.set(HW + 0.018, gutterY, -0.3);
   group.add(gutterR);
 
-  // 4. DRIVER CAB BODY & WINDOWS
+  // 4. DRIVER CAB BODY & CAB DOORS (Driver side left, Passenger side right)
   const cabGroup = new THREE.Group();
 
-  // Cab side walls
-  const cabSideGeo = new THREE.BoxGeometry(0.02, 1.40, 1.20);
-  const cabSideL = new THREE.Mesh(cabSideGeo, bodyPaint);
-  cabSideL.position.set(-HW, floorY + 0.70, cargoZFront - 0.60);
-  cabSideL.userData = { isVehicleHull: true };
-  cabGroup.add(cabSideL);
+  // Cab side doors with windows
+  const cabDoorGeo = new THREE.BoxGeometry(0.03, 1.40, 1.00);
 
-  const cabSideR = new THREE.Mesh(cabSideGeo, bodyPaint);
-  cabSideR.position.set(HW, floorY + 0.70, cargoZFront - 0.60);
-  cabSideR.userData = { isVehicleHull: true };
-  cabGroup.add(cabSideR);
+  // Left Driver Door (with window cutout & outer handle)
+  const cabDoorL = new THREE.Mesh(cabDoorGeo, bodyPaintSolid);
+  cabDoorL.position.set(-HW, floorY + 0.70, cargoZFront - 0.50);
+  cabDoorL.userData = { isVehicleHull: true, partName: 'Fahrertür' };
+  cabGroup.add(cabDoorL);
+
+  const cabWinL = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.50, 0.55), glass);
+  cabWinL.position.set(-HW - 0.005, floorY + 0.95, cargoZFront - 0.50);
+  cabGroup.add(cabWinL);
+
+  // Left Side Rearview Mirror (Außenspiegel)
+  const mirrorL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.22, 0.14), blackPlastic);
+  mirrorL.position.set(-HW - 0.12, floorY + 0.95, cargoZFront - 0.85);
+  cabGroup.add(mirrorL);
+
+  // Right Passenger Door
+  const cabDoorR = new THREE.Mesh(cabDoorGeo, bodyPaintSolid);
+  cabDoorR.position.set(HW, floorY + 0.70, cargoZFront - 0.50);
+  cabDoorR.userData = { isVehicleHull: true, partName: 'Beifahrertür' };
+  cabGroup.add(cabDoorR);
+
+  const cabWinR = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.50, 0.55), glass);
+  cabWinR.position.set(HW + 0.005, floorY + 0.95, cargoZFront - 0.50);
+  cabGroup.add(cabWinR);
+
+  // Right Side Rearview Mirror
+  const mirrorR = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.22, 0.14), blackPlastic);
+  mirrorR.position.set(HW + 0.12, floorY + 0.95, cargoZFront - 0.85);
+  cabGroup.add(mirrorR);
 
   // Cab roof
-  const cabRoof = new THREE.Mesh(new THREE.BoxGeometry(W, 0.02, 1.20), bodyPaint);
-  cabRoof.position.set(0, gutterY, cargoZFront - 0.60);
+  const cabRoof = new THREE.Mesh(new THREE.BoxGeometry(W, 0.02, 1.00), bodyPaint);
+  cabRoof.position.set(0, gutterY, cargoZFront - 0.50);
   cabRoof.userData = { isVehicleHull: true };
   cabGroup.add(cabRoof);
 
-  // Driver cab side windows
-  const cabWindowGeo = new THREE.BoxGeometry(0.005, 0.50, 0.55);
-  const cabWinL = new THREE.Mesh(cabWindowGeo, glass);
-  cabWinL.position.set(-HW - 0.005, floorY + 0.95, cargoZFront - 0.60);
-  cabGroup.add(cabWinL);
-  const cabWinR = new THREE.Mesh(cabWindowGeo, glass);
-  cabWinR.position.set(HW + 0.005, floorY + 0.95, cargoZFront - 0.60);
-  cabGroup.add(cabWinR);
-
   group.add(cabGroup);
 
-  // 5. FRONT FACE: Bonnet, Grille, Headlights, Windshield (Raked FORWARD resting on bonnet)
+  // 5. FRONT FACE: Bonnet, Grille, Headlights, Windshield
   const frontGroup = new THREE.Group();
 
-  // Slanted Engine Bonnet Hood (slopes down forward from windshield base Y=1.20m to grille Y=0.95m)
-  const bonnetGeo = new THREE.BoxGeometry(W - 0.04, 0.02, 0.55);
+  // Engine Bonnet Hood (slopes continuously from grille Y=0.95m at Z=-2.925m to windshield base Y=1.20m at Z=-2.525m)
+  const bonnetGeo = new THREE.BoxGeometry(W - 0.04, 0.02, 0.45);
   const bonnetMesh = new THREE.Mesh(bonnetGeo, bodyPaintSolid);
   bonnetMesh.rotation.x = Math.PI / 10;
-  bonnetMesh.position.set(0, floorY + 0.50, cabZFront - 0.22);
+  bonnetMesh.position.set(0, floorY + 0.50, cabZFront - 0.20);
   frontGroup.add(bonnetMesh);
 
   // Front face panel
@@ -377,19 +390,18 @@ export function createBremerBodyShellGroup(
   bumper.position.set(0, floorY - 0.02, bumperZ - 0.04);
   frontGroup.add(bumper);
 
-  // Windshield (Frontscheibe) - Raked FORWARD from roof edge down to bonnet base
+  // Windshield (Frontscheibe) - Slanted forward resting cleanly on bonnet base
   const windshieldW = W - 0.12;
   const windshieldH = 0.65;
   const windGeo = new THREE.BoxGeometry(windshieldW, windshieldH, 0.012);
   const windMesh = new THREE.Mesh(windGeo, glass);
-  // Slanted FORWARD towards front bumper (+X pitch)
   windMesh.rotation.x = Math.PI / 8;
   windMesh.position.set(0, floorY + 1.05, cabZFront - 0.08);
   frontGroup.add(windMesh);
 
   group.add(frontGroup);
 
-  // 6. COCKPIT SEATS (FACING FORWARD towards -Z!)
+  // 6. COCKPIT SEATS (Positioned inside cab at Z = -2.00m, giving 0.475m clearance from partition wall)
   const driverX = driveSide === 'LHD' ? -0.42 : 0.42;
   const passX = driveSide === 'LHD' ? 0.42 : -0.42;
 
@@ -401,7 +413,7 @@ export function createBremerBodyShellGroup(
   const seatBackD = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.08), seatMat);
   seatBackD.position.set(0, 0.41, 0.20);
   driverSeatGroup.add(seatBackD);
-  driverSeatGroup.position.set(driverX, floorY + 0.30, cargoZFront - 0.65);
+  driverSeatGroup.position.set(driverX, floorY + 0.30, cargoZFront - 0.475);
   group.add(driverSeatGroup);
 
   // Passenger Seat Group
@@ -412,15 +424,19 @@ export function createBremerBodyShellGroup(
   const seatBackP = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.08), seatMat);
   seatBackP.position.set(0, 0.41, 0.20);
   passSeatGroup.add(seatBackP);
-  passSeatGroup.position.set(passX, floorY + 0.30, cargoZFront - 0.65);
+  passSeatGroup.position.set(passX, floorY + 0.30, cargoZFront - 0.475);
   group.add(passSeatGroup);
 
-  // Steering Wheel for Driver
+  // Dashboard Console & Steering Wheel
+  const dashBoard = new THREE.Mesh(new THREE.BoxGeometry(1.60, 0.25, 0.35), blackPlastic);
+  dashBoard.position.set(0, floorY + 0.65, cabZFront - 0.15);
+  group.add(dashBoard);
+
   const wheelGroup = new THREE.Group();
   const stWheelRim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.015, 8, 20), blackPlastic);
   wheelGroup.add(stWheelRim);
   wheelGroup.rotation.x = Math.PI / 4;
-  wheelGroup.position.set(driverX, floorY + 0.70, cargoZFront - 0.88);
+  wheelGroup.position.set(driverX, floorY + 0.78, cabZFront - 0.10);
   group.add(wheelGroup);
 
   // 7. SIDE SLIDING DOOR GUIDE TRACK (Passenger Side)
@@ -430,12 +446,11 @@ export function createBremerBodyShellGroup(
   trackMesh.position.set(slideSide + (driveSide === 'LHD' ? 0.02 : -0.02), gutterY - 0.05, -0.15);
   group.add(trackMesh);
 
-  // 8. REAR HINGED SWING DOOR FRAME & REAR BUMPER
+  // 8. REAR BUMPER & TAIL LIGHTS
   const rearBumper = new THREE.Mesh(new THREE.BoxGeometry(W + 0.04, 0.12, 0.08), chrome);
   rearBumper.position.set(0, floorY - 0.02, cargoZRear + 0.05);
   group.add(rearBumper);
 
-  // Tail Lights
   const tailLightGeo = new THREE.BoxGeometry(0.14, 0.18, 0.04);
   const tailL = new THREE.Mesh(tailLightGeo, redTail);
   tailL.position.set(-HW + 0.08, floorY + 0.40, cargoZRear + 0.03);
@@ -471,7 +486,7 @@ export function createBremerBodyShellGroup(
   group.add(createWheel(-HW - 0.02, BREMER_GEOMETRY_SPECS.rearAxleZ));
   group.add(createWheel(HW + 0.02, BREMER_GEOMETRY_SPECS.rearAxleZ));
 
-  // 10. REAR WHEEL ARCH INTRUSIONS (Interior floor level)
+  // 10. REAR WHEEL ARCH INTRUSIONS
   const archGeo = new THREE.BoxGeometry(0.34, 0.38, 0.85);
   const archMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.5, roughness: 0.5 });
   const archInnerL = new THREE.Mesh(archGeo, archMat);

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { VanState, BOMItem, InteriorModule } from '../../types/van';
-import { formatDimension } from '../../utils/formatters';
 import {
   createSickenbodenGeometry,
   createChassisFrameRailsGeometry,
@@ -20,19 +19,19 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
   const mountRef = useRef<HTMLDivElement>(null);
   const [hoveredInfo, setHoveredInfo] = useState<{ name: string; dim: string; cost: string } | null>(null);
 
-  // Maintain dynamic ref to vanState for animation loop without stale closure
+  // Dynamic state ref for animation loop
   const vanStateRef = useRef<VanState>(vanState);
   useEffect(() => {
     vanStateRef.current = vanState;
   }, [vanState]);
 
-  // References for animatable 3D objects
+  // References for animatable objects
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
-  // Mesh refs for smooth real-time animation loops
+  // Mesh refs for smooth animations
   const partitionDoorRef = useRef<THREE.Mesh | null>(null);
   const slidingDoorRef = useRef<THREE.Mesh | null>(null);
   const rearDoorLeftRef = useRef<THREE.Group | null>(null);
@@ -41,7 +40,6 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
   const kitchenLegRef = useRef<THREE.Mesh | null>(null);
   const bedGroupRef = useRef<THREE.Group | null>(null);
   const beltLinesRef = useRef<{ line: THREE.Line; corner: number[] }[]>([]);
-  const dimOverlayGroupRef = useRef<THREE.Group | null>(null);
   const explodedGroupsRef = useRef<{ group: THREE.Group; defaultPos: THREE.Vector3; offsetPos: THREE.Vector3 }[]>([]);
 
   // Setup Three.js Scene
@@ -97,7 +95,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     interiorSpot.position.set(0, 2.0, 0);
     scene.add(interiorSpot);
 
-    // Grid Floor (Ground at Y=0)
+    // Ground Grid Floor (Y = 0)
     const gridHelper = new THREE.GridHelper(14, 28, 0xff6b00, 0x1e293b);
     gridHelper.position.y = 0;
     scene.add(gridHelper);
@@ -153,15 +151,10 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         beltLinesRef.current.forEach((b) => {
           const points = [
             new THREE.Vector3(b.corner[0], 2.38, 0.5 + b.corner[1]),
-            new THREE.Vector3(b.corner[0], bedGroupRef.current!.position.y, 0.5 + cOffset(b.corner[1])),
+            new THREE.Vector3(b.corner[0], bedGroupRef.current!.position.y, 0.5 + b.corner[1]),
           ];
           b.line.geometry.setFromPoints(points);
         });
-      }
-
-      // Helper function for corner Z offset
-      function cOffset(z: number) {
-        return z;
       }
 
       // 6. Exploded View Mode Interpolation
@@ -265,29 +258,28 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     const floorY = BREMER_GEOMETRY_SPECS.floorY; // 0.55m
 
-    // ── 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR ──
+    // ── 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR (Flat at Y = 0.55m) ──
     const floorGroup = new THREE.Group();
 
-    // Parametric Corrugated Sickenboden Floor Mesh
+    // Parametric Corrugated Sickenboden Floor Mesh (Flat on horizontal X-Z floor)
     const sickenGeo = createSickenbodenGeometry();
     const sickenMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6, roughness: 0.4 });
     const sickenMesh = new THREE.Mesh(sickenGeo, sickenMat);
-    sickenMesh.rotation.x = Math.PI / 2;
-    sickenMesh.position.set(0, floorY + 0.015, 0);
+    sickenMesh.position.set(0, floorY + 0.005, 0);
     sickenMesh.receiveShadow = true;
     floorGroup.add(sickenMesh);
 
-    // 12mm Subfloor Wood Top Layer (Flat at Y=0.55m)
+    // 12mm Subfloor Wood Top Layer (Flat at Y = 0.55m)
     const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.012, 3.05), floorMat);
-    floorMesh.position.set(0, floorY + 0.021, 0);
+    floorMesh.position.set(0, floorY + 0.012, 0);
     floorMesh.receiveShadow = true;
     floorGroup.add(floorMesh);
 
-    // Underbody C-Channel Main Steel Frame Rails (strictly UNDER floor Y < 0.55m)
+    // Underbody C-Channel Steel Frame Rails (under floor Y < 0.55m)
     const frameRails = createChassisFrameRailsGeometry();
     floorGroup.add(frameRails);
 
-    // C/D Pillar Vertical Wall Structural Ribs
+    // C/D Pillar Structural Ribs
     const wallPillars = createWallPillarsGroup();
     floorGroup.add(wallPillars);
 
@@ -297,7 +289,6 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const hullGroup = createBremerBodyShellGroup(vanState.driveSide, vanState.displayMode === 'wireframe');
     scene.add(hullGroup);
 
-    // Register hullGroup in exploded view tracking
     explodedGroupsRef.current.push({
       group: hullGroup,
       defaultPos: new THREE.Vector3(0, 0, 0),
@@ -318,7 +309,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     partRight.position.set(0.5925, floorY + 0.925, partZ);
     partGroup.add(partRight);
 
-    // Header Panel above centered passage door (Y = 1.45m to 1.85m)
+    // Header Panel above centered passage door
     const partTop = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.40, 0.03), wallMat);
     partTop.position.set(0, floorY + 1.65, partZ);
     partGroup.add(partTop);
@@ -349,29 +340,29 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
-    // ── 5. REAR HINGED SWING DOORS (Flügeltüren with Hinge Pivots) ──
+    // ── 5. REAR HINGED SWING DOORS (Attached to C/D rear body pillars at Z = +1.525m) ──
     const rearZ = 1.525;
     const doorW = 0.91;
     const doorH = 1.35;
     const rearDoorMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
-      transparent: true,
-      opacity: 0.6,
-      roughness: 0.7,
+      color: 0xcbd5e1,
+      roughness: 0.35,
+      metalness: 0.3,
+      side: THREE.DoubleSide,
     });
 
-    // Left door pivot (hinged at X = -0.96m)
+    // Left door pivot (hinged at X = -0.96m, Z = +1.525m)
     const rearPivotL = new THREE.Group();
-    rearPivotL.position.set(-0.96, 0, rearZ + 0.02);
+    rearPivotL.position.set(-0.96, 0, rearZ);
     const rearDoorLMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
     rearDoorLMesh.position.set(doorW / 2, floorY + doorH / 2, 0);
     rearPivotL.add(rearDoorLMesh);
     rearDoorLeftRef.current = rearPivotL;
     scene.add(rearPivotL);
 
-    // Right door pivot (hinged at X = +0.96m)
+    // Right door pivot (hinged at X = +0.96m, Z = +1.525m)
     const rearPivotR = new THREE.Group();
-    rearPivotR.position.set(0.96, 0, rearZ + 0.02);
+    rearPivotR.position.set(0.96, 0, rearZ);
     const rearDoorRMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
     rearDoorRMesh.position.set(-doorW / 2, floorY + doorH / 2, 0);
     rearPivotR.add(rearDoorRMesh);
@@ -448,7 +439,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(1.20, 0.0, -0.65),
     });
 
-    // ── 8. ELECTRIC 4-POINT STRAP DROP-DOWN BED (1850 x 1400 mm) ──
+    // ── 8. ELECTRIC 4-POINT STRAP DROP-DOWN BED ──
     const bedGroup = new THREE.Group();
 
     const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.06, 1.85), bedFrameMat);
@@ -499,11 +490,10 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     // ── 10. 3D CAD DIMENSION OVERLAYS ──
     const dimGroup = create3DDimensionOverlayGroup();
-    dimOverlayGroupRef.current = dimGroup;
     scene.add(dimGroup);
   };
 
-  // Helper to create 3D dimension lines callouts overlay
+  // Helper to create 3D dimension callout overlay
   const create3DDimensionOverlayGroup = () => {
     const group = new THREE.Group();
     const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
@@ -514,16 +504,16 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       return new THREE.Line(geo, mat);
     };
 
-    // 1. Laderaumlänge 3050mm (along floor edge Z = -1.525m to +1.525m)
+    // Laderaumlänge 3050mm
     group.add(createCalloutLine(new THREE.Vector3(-0.95, 0.56, -1.525), new THREE.Vector3(-0.95, 0.56, 1.525), orangeLineMat));
 
-    // 2. Stehhöhe 1850mm (vertical line from floor Y=0.55m to ceiling Y=2.40m)
+    // Stehhöhe 1850mm
     group.add(createCalloutLine(new THREE.Vector3(-0.95, 0.55, 0.0), new THREE.Vector3(-0.95, 2.40, 0.0)));
 
-    // 3. Gesamthöhe 2550mm (vertical line from ground Y=0.0m to roof peak Y=2.55m)
+    // Gesamthöhe 2550mm
     group.add(createCalloutLine(new THREE.Vector3(1.10, 0.0, 1.525), new THREE.Vector3(1.10, 2.55, 1.525), orangeLineMat));
 
-    // 4. Laderaumbreite 1720mm (across width at rear)
+    // Laderaumbreite 1720mm
     group.add(createCalloutLine(new THREE.Vector3(-0.86, 0.56, 1.55), new THREE.Vector3(0.86, 0.56, 1.55)));
 
     return group;

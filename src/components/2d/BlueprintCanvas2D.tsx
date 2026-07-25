@@ -115,13 +115,13 @@ export const BlueprintCanvas2D: React.FC<BlueprintCanvas2DProps> = ({ vanState }
     ctx.fillText(driverLabel, startX - 780 * scale, driverY + 230 * scale);
     ctx.fillText(passengerLabel, startX - 780 * scale, passengerY + 230 * scale);
 
-    // Partition Wall & Sliding Door
+    // Partition Wall & Sliding Door (Centered 650 mm passage)
     if (layers.partition) {
       ctx.fillStyle = '#64748b';
       ctx.fillRect(startX, startY, 30, W * scale);
 
-      // Door Passage (650 mm)
-      const doorY = driveSide === 'LHD' ? startY + 470 * scale : startY + 600 * scale;
+      // Centered Door Passage (650 mm in middle of 1720 mm width)
+      const doorY = startY + ((W - 650) / 2) * scale;
       ctx.fillStyle = '#ff6b00';
       ctx.fillRect(startX, doorY, 30, 650 * scale);
       ctx.fillStyle = '#ffffff';

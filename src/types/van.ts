@@ -120,6 +120,7 @@ export interface VanState {
   isPartitionOpen: boolean;
   isSlidingOpen: boolean;
   isRearOpen: boolean;
+  isCabDoorsOpen: boolean;
   isKitchenExtended: boolean;
   isBedLowered: boolean;
   // 3D Controls

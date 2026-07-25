@@ -7,6 +7,7 @@ interface ControlsOverlay3DProps {
   onTogglePartition: () => void;
   onToggleSliding: () => void;
   onToggleRear: () => void;
+  onToggleCabDoors: () => void;
   onToggleKitchen: () => void;
   onToggleBed: () => void;
   onSetDisplayMode: (mode: DisplayMode) => void;
@@ -18,6 +19,7 @@ export const ControlsOverlay3D: React.FC<ControlsOverlay3DProps> = ({
   onTogglePartition,
   onToggleSliding,
   onToggleRear,
+  onToggleCabDoors,
   onToggleKitchen,
   onToggleBed,
   onSetDisplayMode,
@@ -79,6 +81,14 @@ export const ControlsOverlay3D: React.FC<ControlsOverlay3DProps> = ({
       <div className="control-section">
         <span className="section-title">Interaktive Mechaniken</span>
         <div className="btn-group">
+          <button
+            className={`ctrl-btn toggle ${vanState.isCabDoorsOpen ? 'active-orange' : ''}`}
+            onClick={onToggleCabDoors}
+          >
+            <DoorClosed size={14} />
+            Cab-Türen: {vanState.isCabDoorsOpen ? 'Offen' : 'Zu'}
+          </button>
+
           <button
             className={`ctrl-btn toggle ${vanState.isPartitionOpen ? 'active-orange' : ''}`}
             onClick={onTogglePartition}

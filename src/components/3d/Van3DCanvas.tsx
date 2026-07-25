@@ -7,6 +7,7 @@ import {
   createChassisFrameRailsGeometry,
   createWallPillarsGroup,
   createBremerBodyShellGroup,
+  createBremerCabDoorGroup,
   BREMER_GEOMETRY_SPECS,
 } from '../../utils/chassisGeometry';
 
@@ -36,6 +37,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
   const slidingDoorRef = useRef<THREE.Mesh | null>(null);
   const rearDoorLeftRef = useRef<THREE.Group | null>(null);
   const rearDoorRightRef = useRef<THREE.Group | null>(null);
+  const cabDoorLeftRef = useRef<THREE.Group | null>(null);
+  const cabDoorRightRef = useRef<THREE.Group | null>(null);
   const kitchenGroupRef = useRef<THREE.Group | null>(null);
   const kitchenLegRef = useRef<THREE.Mesh | null>(null);
   const bedGroupRef = useRef<THREE.Group | null>(null);
@@ -111,13 +114,13 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
       const currentState = vanStateRef.current;
 
-      // 1. Centered Partition Wall Sliding Door (X axis lerp: 0.0m closed to 0.65m open)
+      // 1. Centered Partition Wall Sliding Door (X axis lerp)
       if (partitionDoorRef.current) {
         const targetX = currentState.isPartitionOpen ? 0.65 : 0.0;
         partitionDoorRef.current.position.x += (targetX - partitionDoorRef.current.position.x) * 0.12;
       }
 
-      // 2. Side Passenger Sliding Door (Z axis lerp: -0.15m closed to +0.85m open)
+      // 2. Side Passenger Sliding Door (Z axis lerp)
       if (slidingDoorRef.current) {
         const targetZ = currentState.isSlidingOpen ? 0.85 : -0.15;
         slidingDoorRef.current.position.z += (targetZ - slidingDoorRef.current.position.z) * 0.12;
@@ -130,7 +133,15 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         rearDoorRightRef.current.rotation.y += (-targetRotY - rearDoorRightRef.current.rotation.y) * 0.12;
       }
 
-      // 4. Outdoor Drop-out Kitchen (X-position lerp: 0.60m inside to 1.25m outside)
+      // 4. Driver & Passenger 5-Corner Cab Doors (Y-rotation swing pivot lerp: 0° closed to 70° open)
+      if (cabDoorLeftRef.current && cabDoorRightRef.current) {
+        const targetRotL = currentState.isCabDoorsOpen ? -Math.PI * 0.40 : 0;
+        const targetRotR = currentState.isCabDoorsOpen ? Math.PI * 0.40 : 0;
+        cabDoorLeftRef.current.rotation.y += (targetRotL - cabDoorLeftRef.current.rotation.y) * 0.12;
+        cabDoorRightRef.current.rotation.y += (targetRotR - cabDoorRightRef.current.rotation.y) * 0.12;
+      }
+
+      // 5. Outdoor Drop-out Kitchen (X-position lerp)
       if (kitchenGroupRef.current) {
         const targetX = currentState.isKitchenExtended ? 1.25 : 0.60;
         const targetY = currentState.isKitchenExtended ? 0.40 : 0.60;
@@ -142,7 +153,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         }
       }
 
-      // 5. Electric 4-Point Strap Drop-Down Bed (Y-height lerp: 2.20m ceiling to 1.10m night height)
+      // 6. Electric 4-Point Strap Drop-Down Bed (Y-height lerp)
       if (bedGroupRef.current) {
         const targetY = currentState.isBedLowered ? 1.10 : 2.20;
         bedGroupRef.current.position.y += (targetY - bedGroupRef.current.position.y) * 0.12;
@@ -157,7 +168,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         });
       }
 
-      // 6. Exploded View Mode Interpolation
+      // 7. Exploded View Mode Interpolation
       explodedGroupsRef.current.forEach((item) => {
         const target = currentState.displayMode === 'exploded' ? item.offsetPos : item.defaultPos;
         item.group.position.lerp(target, 0.08);
@@ -257,11 +268,13 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const accentMat = new THREE.MeshStandardMaterial({ color: 0xff6b00 });
 
     const floorY = BREMER_GEOMETRY_SPECS.floorY; // 0.55m
+    const HW = BREMER_GEOMETRY_SPECS.bodyWidth / 2; // 0.96m
+    const cabZFront = -1.525 - BREMER_GEOMETRY_SPECS.cabLength; // -2.450m
 
-    // ── 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR (Flat at Y = 0.55m) ──
+    // ── 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR ──
     const floorGroup = new THREE.Group();
 
-    // Parametric Corrugated Sickenboden Floor Mesh (Flat on horizontal X-Z floor)
+    // Parametric Corrugated Sickenboden Floor Mesh
     const sickenGeo = createSickenbodenGeometry();
     const sickenMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6, roughness: 0.4 });
     const sickenMesh = new THREE.Mesh(sickenGeo, sickenMat);
@@ -269,13 +282,13 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     sickenMesh.receiveShadow = true;
     floorGroup.add(sickenMesh);
 
-    // 12mm Subfloor Wood Top Layer (Flat at Y = 0.55m)
+    // 12mm Subfloor Wood Top Layer
     const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.012, 3.05), floorMat);
     floorMesh.position.set(0, floorY + 0.012, 0);
     floorMesh.receiveShadow = true;
     floorGroup.add(floorMesh);
 
-    // Underbody C-Channel Steel Frame Rails (under floor Y < 0.55m)
+    // Underbody C-Channel Steel Frame Rails
     const frameRails = createChassisFrameRailsGeometry();
     floorGroup.add(frameRails);
 
@@ -295,26 +308,44 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(0, 0.6, 0),
     });
 
-    // ── 3. CENTERED PARTITION WALL WITH SLIDING DOOR (Z = -1.525m) ──
+    // ── 3. 5-CORNER OPENABLE CAB DOORS (Hinged at A-pillar Z = -2.45m) ──
+    // Driver Left Cab Door Pivot
+    const cabDoorPivotL = new THREE.Group();
+    cabDoorPivotL.position.set(-HW, floorY, cabZFront);
+    const cabDoorMeshL = createBremerCabDoorGroup('left', vanState.displayMode === 'wireframe');
+    cabDoorPivotL.add(cabDoorMeshL);
+    cabDoorLeftRef.current = cabDoorPivotL;
+    scene.add(cabDoorPivotL);
+
+    // Passenger Right Cab Door Pivot
+    const cabDoorPivotR = new THREE.Group();
+    cabDoorPivotR.position.set(HW, floorY, cabZFront);
+    const cabDoorMeshR = createBremerCabDoorGroup('right', vanState.displayMode === 'wireframe');
+    cabDoorMeshR.rotation.y = Math.PI; // Face outwards
+    cabDoorPivotR.add(cabDoorMeshR);
+    cabDoorRightRef.current = cabDoorPivotR;
+    scene.add(cabDoorPivotR);
+
+    // ── 4. CENTERED PARTITION WALL WITH SLIDING DOOR (Z = -1.525m) ──
     const partZ = -1.525;
     const partGroup = new THREE.Group();
 
-    // Left Panel (Width = 0.535m, from X = -0.86m to -0.325m)
+    // Left Panel
     const partLeft = new THREE.Mesh(new THREE.BoxGeometry(0.535, 1.85, 0.03), wallMat);
     partLeft.position.set(-0.5925, floorY + 0.925, partZ);
     partGroup.add(partLeft);
 
-    // Right Panel (Width = 0.535m, from X = +0.325m to +0.86m)
+    // Right Panel
     const partRight = new THREE.Mesh(new THREE.BoxGeometry(0.535, 1.85, 0.03), wallMat);
     partRight.position.set(0.5925, floorY + 0.925, partZ);
     partGroup.add(partRight);
 
-    // Header Panel above centered passage door
+    // Header Panel
     const partTop = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.40, 0.03), wallMat);
     partTop.position.set(0, floorY + 1.65, partZ);
     partGroup.add(partTop);
 
-    // Partition Sliding Door Panel (Centered 650 x 1450 mm)
+    // Partition Sliding Door Panel
     const partDoor = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.45, 0.02), accentMat);
     partDoor.position.set(0.0, floorY + 0.725, partZ + 0.015);
     partitionDoorRef.current = partDoor;
@@ -328,19 +359,19 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(0, 0, -0.7),
     });
 
-    // ── 4. PASSENGER SLIDING DOOR (Side wall opening) ──
+    // ── 5. PASSENGER SLIDING DOOR ──
     const slideDoorMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
       transparent: true,
       opacity: 0.35,
     });
     const slideDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.02, 1.40, 1.10), slideDoorMat);
-    const slideSideX = vanState.driveSide === 'LHD' ? 0.96 : -0.96;
+    const slideSideX = vanState.driveSide === 'LHD' ? HW : -HW;
     slideDoorFrame.position.set(slideSideX, floorY + 0.70, -0.15);
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
-    // ── 5. REAR HINGED SWING DOORS (Attached to C/D rear body pillars at Z = +1.525m) ──
+    // ── 6. REAR HINGED SWING DOORS (Attached to C/D rear pillars at Z = +1.525m) ──
     const rearZ = 1.525;
     const doorW = 0.91;
     const doorH = 1.35;
@@ -351,28 +382,27 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       side: THREE.DoubleSide,
     });
 
-    // Left door pivot (hinged at X = -0.96m, Z = +1.525m)
+    // Left door pivot
     const rearPivotL = new THREE.Group();
-    rearPivotL.position.set(-0.96, 0, rearZ);
+    rearPivotL.position.set(-HW, 0, rearZ);
     const rearDoorLMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
     rearDoorLMesh.position.set(doorW / 2, floorY + doorH / 2, 0);
     rearPivotL.add(rearDoorLMesh);
     rearDoorLeftRef.current = rearPivotL;
     scene.add(rearPivotL);
 
-    // Right door pivot (hinged at X = +0.96m, Z = +1.525m)
+    // Right door pivot
     const rearPivotR = new THREE.Group();
-    rearPivotR.position.set(0.96, 0, rearZ);
+    rearPivotR.position.set(HW, 0, rearZ);
     const rearDoorRMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
     rearDoorRMesh.position.set(-doorW / 2, floorY + doorH / 2, 0);
     rearPivotR.add(rearDoorRMesh);
     rearDoorRightRef.current = rearPivotR;
     scene.add(rearPivotR);
 
-    // ── 6. L-LOUNGE BENCHES & TECH COMPARTMENTS ──
+    // ── 7. L-LOUNGE BENCHES & TECH COMPARTMENTS ──
     const loungeGroup = new THREE.Group();
 
-    // Left Bench
     const benchL = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.45, 1.90), benchMat);
     benchL.position.set(-0.61, floorY + 0.225, 0.5);
     benchL.castShadow = true;
@@ -382,7 +412,6 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     cushionL.position.set(-0.61, floorY + 0.49, 0.5);
     loungeGroup.add(cushionL);
 
-    // Right Bench
     const benchR = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.45, 1.90), benchMat);
     benchR.position.set(0.61, floorY + 0.225, 0.5);
     benchR.castShadow = true;
@@ -392,7 +421,6 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     cushionR.position.set(0.61, floorY + 0.49, 0.5);
     loungeGroup.add(cushionR);
 
-    // Lagun Swivel Table
     const tableTop = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.02, 0.70), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 }));
     tableTop.position.set(-0.10, floorY + 0.72, 0.5);
     tableTop.castShadow = true;
@@ -410,7 +438,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(-0.5, 0, 0),
     });
 
-    // ── 7. OUTDOOR HEAVY-DUTY DROP KITCHEN ──
+    // ── 8. OUTDOOR HEAVY-DUTY DROP KITCHEN ──
     const kitchenGroup = new THREE.Group();
 
     const kitBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.88, 0.85), kitchenMat);
@@ -439,7 +467,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(1.20, 0.0, -0.65),
     });
 
-    // ── 8. ELECTRIC 4-POINT STRAP DROP-DOWN BED ──
+    // ── 9. ELECTRIC 4-POINT STRAP DROP-DOWN BED ──
     const bedGroup = new THREE.Group();
 
     const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.06, 1.85), bedFrameMat);
@@ -475,7 +503,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       beltLinesRef.current.push({ line, corner: c });
     });
 
-    // ── 9. OVERHEAD AIRCRAFT LOCKERS ──
+    // ── 10. OVERHEAD AIRCRAFT LOCKERS ──
     const lockerGroup = new THREE.Group();
 
     const lockerL = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.28, 1.80), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 }));
@@ -488,7 +516,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     scene.add(lockerGroup);
 
-    // ── 10. 3D CAD DIMENSION OVERLAYS ──
+    // ── 11. 3D CAD DIMENSION OVERLAYS ──
     const dimGroup = create3DDimensionOverlayGroup();
     scene.add(dimGroup);
   };

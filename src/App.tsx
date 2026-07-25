@@ -19,6 +19,7 @@ export const App: React.FC = () => {
     togglePartitionDoor,
     toggleSlidingDoor,
     toggleRearDoors,
+    toggleCabDoors,
     toggleKitchen,
     toggleBed,
     setDisplayMode,
@@ -52,6 +53,7 @@ export const App: React.FC = () => {
               onTogglePartition={togglePartitionDoor}
               onToggleSliding={toggleSlidingDoor}
               onToggleRear={toggleRearDoors}
+              onToggleCabDoors={toggleCabDoors}
               onToggleKitchen={toggleKitchen}
               onToggleBed={toggleBed}
               onSetDisplayMode={setDisplayMode}

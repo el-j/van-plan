@@ -10,6 +10,7 @@ export function useVanState() {
     isPartitionOpen: false,
     isSlidingOpen: false,
     isRearOpen: false,
+    isCabDoorsOpen: false,
     isKitchenExtended: false,
     isBedLowered: false,
     displayMode: 'solid',
@@ -38,6 +39,7 @@ export function useVanState() {
   const togglePartitionDoor = () => setState((prev) => ({ ...prev, isPartitionOpen: !prev.isPartitionOpen }));
   const toggleSlidingDoor = () => setState((prev) => ({ ...prev, isSlidingOpen: !prev.isSlidingOpen }));
   const toggleRearDoors = () => setState((prev) => ({ ...prev, isRearOpen: !prev.isRearOpen }));
+  const toggleCabDoors = () => setState((prev) => ({ ...prev, isCabDoorsOpen: !prev.isCabDoorsOpen }));
   const toggleKitchen = () => setState((prev) => ({
     ...prev,
     isKitchenExtended: !prev.isKitchenExtended,
@@ -71,6 +73,7 @@ export function useVanState() {
     togglePartitionDoor,
     toggleSlidingDoor,
     toggleRearDoors,
+    toggleCabDoors,
     toggleKitchen,
     toggleBed,
     setDisplayMode,

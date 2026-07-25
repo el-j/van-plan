@@ -13,6 +13,7 @@ describe('BlueprintControls component', () => {
     isPartitionOpen: false,
     isSlidingOpen: false,
     isRearOpen: false,
+    isCabDoorsOpen: false,
     isKitchenExtended: false,
     isBedLowered: false,
     displayMode: 'solid',

@@ -13,6 +13,7 @@ describe('ControlsOverlay3D component', () => {
     isPartitionOpen: true,
     isSlidingOpen: true,
     isRearOpen: true,
+    isCabDoorsOpen: true,
     isKitchenExtended: true,
     isBedLowered: true,
     displayMode: 'solid',
@@ -38,6 +39,7 @@ describe('ControlsOverlay3D component', () => {
     const onTogglePartition = vi.fn();
     const onToggleSliding = vi.fn();
     const onToggleRear = vi.fn();
+    const onToggleCabDoors = vi.fn();
     const onToggleKitchen = vi.fn();
     const onToggleBed = vi.fn();
     const onSetDisplayMode = vi.fn();
@@ -49,6 +51,7 @@ describe('ControlsOverlay3D component', () => {
         onTogglePartition={onTogglePartition}
         onToggleSliding={onToggleSliding}
         onToggleRear={onToggleRear}
+        onToggleCabDoors={onToggleCabDoors}
         onToggleKitchen={onToggleKitchen}
         onToggleBed={onToggleBed}
         onSetDisplayMode={onSetDisplayMode}
@@ -76,6 +79,9 @@ describe('ControlsOverlay3D component', () => {
     expect(onSetCameraPreset).toHaveBeenCalledWith('bed');
 
     // Toggles
+    fireEvent.click(screen.getByText('Cab-Türen: Offen'));
+    expect(onToggleCabDoors).toHaveBeenCalled();
+
     fireEvent.click(screen.getByText('Trennwand-Tür: Offen'));
     expect(onTogglePartition).toHaveBeenCalled();
 

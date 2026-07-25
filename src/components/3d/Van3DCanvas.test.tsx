@@ -13,6 +13,7 @@ describe('Van3DCanvas component', () => {
     isPartitionOpen: false,
     isSlidingOpen: false,
     isRearOpen: false,
+    isCabDoorsOpen: false,
     isKitchenExtended: false,
     isBedLowered: false,
     displayMode: 'solid',
@@ -42,7 +43,6 @@ describe('Van3DCanvas component', () => {
 
     expect(container.querySelector('.canvas-3d-wrapper')).toBeInTheDocument();
 
-    // Trigger window resize event
     act(() => {
       window.dispatchEvent(new Event('resize'));
     });
@@ -62,6 +62,7 @@ describe('Van3DCanvas component', () => {
         isPartitionOpen: true,
         isSlidingOpen: true,
         isRearOpen: true,
+        isCabDoorsOpen: true,
         isKitchenExtended: true,
         isBedLowered: true,
       };

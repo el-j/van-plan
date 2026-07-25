@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useVanState } from './useVanState';
-import { INTERIOR_MODULES } from '../data/modulesData';
 
 describe('useVanState hook', () => {
   it('initializes with default state', () => {
@@ -11,6 +10,7 @@ describe('useVanState hook', () => {
     expect(result.current.state.unit).toBe('mm');
     expect(result.current.state.driveSide).toBe('LHD');
     expect(result.current.state.isPartitionOpen).toBe(false);
+    expect(result.current.state.isCabDoorsOpen).toBe(false);
     expect(result.current.state.isBedLowered).toBe(false);
   });
 
@@ -29,13 +29,14 @@ describe('useVanState hook', () => {
     expect(result.current.state.selectedModuleId).toBe('bed');
   });
 
-  it('toggles partition, sliding door, rear doors, kitchen, bed, and layers', () => {
+  it('toggles doors, kitchen, bed, and layers', () => {
     const { result } = renderHook(() => useVanState());
 
     act(() => {
       result.current.togglePartitionDoor();
       result.current.toggleSlidingDoor();
       result.current.toggleRearDoors();
+      result.current.toggleCabDoors();
       result.current.toggleKitchen();
       result.current.toggleBed();
       result.current.toggleLayer2D('bed');
@@ -45,6 +46,7 @@ describe('useVanState hook', () => {
     expect(result.current.state.isPartitionOpen).toBe(true);
     expect(result.current.state.isSlidingOpen).toBe(true);
     expect(result.current.state.isRearOpen).toBe(true);
+    expect(result.current.state.isCabDoorsOpen).toBe(true);
     expect(result.current.state.isKitchenExtended).toBe(true);
     expect(result.current.state.isBedLowered).toBe(true);
     expect(result.current.state.visibleLayers2D.bed).toBe(false);

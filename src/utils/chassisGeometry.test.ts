@@ -4,6 +4,7 @@ import {
   createChassisFrameRailsGeometry,
   createWallPillarsGroup,
   createBremerBodyShellGroup,
+  createBremerCabDoorGroup,
   calculateSickenbodenMetrics,
 } from './chassisGeometry';
 
@@ -31,7 +32,7 @@ describe('chassisGeometry utility', () => {
     });
 
     expect(group).toBeDefined();
-    expect(group.children.length).toBe(2); // Left and right rails
+    expect(group.children.length).toBe(2);
   });
 
   it('creates C/D pillar wall structural ribs group', () => {
@@ -44,12 +45,21 @@ describe('chassisGeometry utility', () => {
   it('creates 100% authentic Bremer body shell for LHD and RHD', () => {
     const shellLHD = createBremerBodyShellGroup('LHD', false);
     expect(shellLHD).toBeDefined();
-    // Should contain many children: walls, roof, cab, grille, headlights, doors, wheels...
-    expect(shellLHD.children.length).toBeGreaterThan(20);
+    expect(shellLHD.children.length).toBeGreaterThan(15);
 
     const shellRHD = createBremerBodyShellGroup('RHD', true);
     expect(shellRHD).toBeDefined();
-    expect(shellRHD.children.length).toBeGreaterThan(20);
+    expect(shellRHD.children.length).toBeGreaterThan(15);
+  });
+
+  it('creates 5-corner openable cab doors for left and right', () => {
+    const doorL = createBremerCabDoorGroup('left', false);
+    expect(doorL).toBeDefined();
+    expect(doorL.children.length).toBeGreaterThan(2);
+
+    const doorR = createBremerCabDoorGroup('right', true);
+    expect(doorR).toBeDefined();
+    expect(doorR.children.length).toBeGreaterThan(2);
   });
 
   it('calculates Sickenboden corrugation metrics accurately', () => {

@@ -121,9 +121,9 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         partitionDoorRef.current.position.x += (targetX - partitionDoorRef.current.position.x) * 0.12;
       }
 
-      // 2. Side Passenger Sliding Door (In right wall cutout hole: Z=-0.95m closed to Z=+0.70m open)
+      // 2. Side Passenger Sliding Door (In cutout hole: Z=-0.9625m closed to Z=+0.25m open)
       if (slidingDoorRef.current) {
-        const targetZ = currentState.isSlidingOpen ? 0.70 : -0.95;
+        const targetZ = currentState.isSlidingOpen ? 0.25 : -0.9625;
         slidingDoorRef.current.position.z += (targetZ - slidingDoorRef.current.position.z) * 0.12;
       }
 
@@ -348,15 +348,15 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(0, 0, -0.7),
     });
 
-    // ── 5. PASSENGER SLIDING DOOR (Fits inside right side wall cutout hole Z = -1.50m .. -0.40m) ──
+    // ── 5. PASSENGER SLIDING DOOR (Fits inside cutout hole Z = -1.525m .. -0.40m) ──
     const slideDoorMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
       transparent: true,
       opacity: 0.45,
     });
-    const slideDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.025, 1.38, 1.08), slideDoorMat);
+    const slideDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.025, 1.38, 1.125), slideDoorMat);
     const slideSideX = vanState.driveSide === 'LHD' ? HW : -HW;
-    slideDoorFrame.position.set(slideSideX, floorY + 0.70, -0.95);
+    slideDoorFrame.position.set(slideSideX, floorY + 0.70, -0.9625);
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
@@ -430,18 +430,28 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     // ── 8. OUTDOOR HEAVY-DUTY DROP KITCHEN ──
     const kitchenGroup = new THREE.Group();
 
+    // Sits flat on cargo floor (Y=0 relative to group)
     const kitBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.88, 0.85), kitchenMat);
-    kitBody.position.set(0, floorY + 0.44, 0);
+    kitBody.position.set(0, 0.44, 0); // Center is 0.44m above bottom
     kitBody.castShadow = true;
     kitchenGroup.add(kitBody);
 
     const kitTop = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.02, 0.83), stainlessMat);
-    kitTop.position.set(0, floorY + 0.89, 0);
+    kitTop.position.set(0, 0.89, 0);
     kitchenGroup.add(kitTop);
+
+    // Heavy-duty telescopic pull-out rails (Ausziehschienen)
+    const rail1 = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.02, 0.02), stainlessMat);
+    rail1.position.set(-0.30, 0.01, -0.30);
+    kitchenGroup.add(rail1);
+
+    const rail2 = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.02, 0.02), stainlessMat);
+    rail2.position.set(-0.30, 0.01, 0.30);
+    kitchenGroup.add(rail2);
 
     const legGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.85);
     const legMesh = new THREE.Mesh(legGeo, accentMat);
-    legMesh.position.set(0.15, floorY - 0.42, 0);
+    legMesh.position.set(0.15, -0.42, 0);
     legMesh.visible = false;
     kitchenLegRef.current = legMesh;
     kitchenGroup.add(legMesh);

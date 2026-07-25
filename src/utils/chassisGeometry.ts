@@ -372,25 +372,30 @@ export function createBremerBodyShellGroup(
   const aPillarZ = -2.420;
   const bumperZ = -2.770;
 
-  // 1. CARGO SIDE WALLS (Right wall has SLIDING DOOR OPENING CUTOUT HOLE from Z=-1.50m to Z=-0.40m)
+  // 1. CARGO SIDE WALLS (Sliding door opening cutout is always on the side opposite driveSide!)
+  const isLHD = driveSide === 'LHD';
+  const solidWallSide = isLHD ? -HW : HW;
+  const cutoutWallSide = isLHD ? HW : -HW;
+
+  // Solid wall
   const leftWallGeo = new THREE.BoxGeometry(0.02, 1.40, L);
-  const wallL = new THREE.Mesh(leftWallGeo, bodyPaint);
-  wallL.position.set(-HW, floorY + 0.70, 0);
-  wallL.userData = { isVehicleHull: true, partName: 'Fahrzeugwand Links' };
-  group.add(wallL);
+  const wallSolid = new THREE.Mesh(leftWallGeo, bodyPaint);
+  wallSolid.position.set(solidWallSide, floorY + 0.70, 0);
+  wallSolid.userData = { isVehicleHull: true, partName: isLHD ? 'Fahrzeugwand Links (Solid)' : 'Fahrzeugwand Rechts (Solid)' };
+  group.add(wallSolid);
 
-  // Right Side Wall: Rear Panel (Z=-0.40m to +1.525m) & Header Beam above sliding door cutout
-  const rightWallRearGeo = new THREE.BoxGeometry(0.02, 1.40, 1.925);
-  const wallRRear = new THREE.Mesh(rightWallRearGeo, bodyPaint);
-  wallRRear.position.set(HW, floorY + 0.70, 0.5625);
-  wallRRear.userData = { isVehicleHull: true, partName: 'Fahrzeugwand Rechts Hinten' };
-  group.add(wallRRear);
+  // Cutout Wall: Rear Panel (Z=-0.40m to +1.525m) & Header Beam above sliding door cutout
+  const wallCutoutRearGeo = new THREE.BoxGeometry(0.02, 1.40, 1.925);
+  const wallCutoutRear = new THREE.Mesh(wallCutoutRearGeo, bodyPaint);
+  wallCutoutRear.position.set(cutoutWallSide, floorY + 0.70, 0.5625);
+  wallCutoutRear.userData = { isVehicleHull: true, partName: 'Fahrzeugwand Cutout Hinten' };
+  group.add(wallCutoutRear);
 
-  const wallRHeaderGeo = new THREE.BoxGeometry(0.02, 0.30, 1.10);
-  const wallRHeader = new THREE.Mesh(wallRHeaderGeo, bodyPaint);
-  wallRHeader.position.set(HW, floorY + 1.25, -0.95);
-  wallRHeader.userData = { isVehicleHull: true, partName: 'Schiebetür Sturz' };
-  group.add(wallRHeader);
+  const wallCutoutHeaderGeo = new THREE.BoxGeometry(0.02, 0.30, 1.125);
+  const wallCutoutHeader = new THREE.Mesh(wallCutoutHeaderGeo, bodyPaint);
+  wallCutoutHeader.position.set(cutoutWallSide, floorY + 1.25, -0.9625);
+  wallCutoutHeader.userData = { isVehicleHull: true, partName: 'Schiebetür Sturz' };
+  group.add(wallCutoutHeader);
 
   // 2. CONTINUOUS GFK HIGH ROOF SHELL
   const roofGroup = buildGfkHighRoofShell(bodyPaint);
@@ -400,15 +405,15 @@ export function createBremerBodyShellGroup(
   const framing = buildCabPillarFraming(isWireframe);
   group.add(framing);
 
-  // 4. RAIN GUTTERS
-  const totalRoofLength = L + BREMER_GEOMETRY_SPECS.cabLength;
-  const gutterGeo = new THREE.BoxGeometry(0.035, 0.025, totalRoofLength + 0.2);
+  // 4. RAIN GUTTERS (Ending precisely at front windshield Z = -2.15m and rear doors Z = 1.525m)
+  const gutterLength = 3.675; // -2.15m to +1.525m
+  const gutterGeo = new THREE.BoxGeometry(0.035, 0.025, gutterLength);
   const gutterMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.75 });
   const gutterL = new THREE.Mesh(gutterGeo, gutterMat);
-  gutterL.position.set(-HW - 0.018, gutterY, -0.2);
+  gutterL.position.set(-HW - 0.018, gutterY, -0.3125); // Center is at (-2.15 + 1.525)/2 = -0.3125m
   group.add(gutterL);
   const gutterR = new THREE.Mesh(gutterGeo, gutterMat);
-  gutterR.position.set(HW + 0.018, gutterY, -0.2);
+  gutterR.position.set(HW + 0.018, gutterY, -0.3125);
   group.add(gutterR);
 
   // 5. FRONT BONNET & FENDERS

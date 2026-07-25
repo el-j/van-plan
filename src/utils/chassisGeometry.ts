@@ -266,8 +266,8 @@ export function buildFrontBonnetAndFenders(bodyPaintSolidMat: THREE.Material): T
 
   const bonnetGeo = new THREE.ExtrudeGeometry(bonnetProfile, { steps: 1, depth: W - 0.08, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015 });
   const bonnetMesh = new THREE.Mesh(bonnetGeo, bodyPaintSolidMat);
-  bonnetMesh.rotation.y = -Math.PI / 2; // X becomes Z, Z becomes -X
-  bonnetMesh.position.set(-(W - 0.08) / 2, floorY, bumperZ);
+  bonnetMesh.rotation.y = -Math.PI / 2; // local X (snout) -> +World Z, local Z (width) -> -World X
+  bonnetMesh.position.set((W - 0.08) / 2, floorY, bumperZ); // +D/2 down to -D/2
   group.add(bonnetMesh);
 
   // 2. Side Fenders (Kotflügel) wrapping around the front corners
@@ -284,12 +284,12 @@ export function buildFrontBonnetAndFenders(bodyPaintSolidMat: THREE.Material): T
   
   const fenderL = new THREE.Mesh(fenderGeo, bodyPaintSolidMat);
   fenderL.rotation.y = -Math.PI / 2;
-  fenderL.position.set(-HW + 0.01, floorY, bumperZ);
+  fenderL.position.set(-HW + 0.04, floorY, bumperZ);
   group.add(fenderL);
 
   const fenderR = new THREE.Mesh(fenderGeo, bodyPaintSolidMat);
   fenderR.rotation.y = -Math.PI / 2;
-  fenderR.position.set(HW - 0.03, floorY, bumperZ);
+  fenderR.position.set(HW, floorY, bumperZ);
   group.add(fenderR);
 
   return group;
@@ -608,7 +608,7 @@ export function createBremerCabDoorGroup(side: 'left' | 'right', isWireframe: bo
   doorOuterShape.quadraticCurveTo(0.15, 0.05, 0.05, 0.30); // Curve up and forward around front wheel arch
   doorOuterShape.lineTo(0, 0.40); // To front edge (meets fender)
   doorOuterShape.lineTo(0, 0.85); // Up to bottom of window sill
-  doorOuterShape.lineTo(0.27, 1.40); // A-pillar slant backward
+  doorOuterShape.lineTo(0.27, 1.25); // A-pillar slant backward (meets windshield top header at Y=1.80m / local 1.25m)
   doorOuterShape.lineTo(0.895, 1.40); // Top rear corner
   doorOuterShape.closePath();
 
@@ -617,7 +617,7 @@ export function createBremerCabDoorGroup(side: 'left' | 'right', isWireframe: bo
   winHolePath.moveTo(0.12, 0.55);
   winHolePath.lineTo(0.845, 0.55);
   winHolePath.lineTo(0.845, 1.32);
-  winHolePath.lineTo(0.30, 1.32);
+  winHolePath.lineTo(0.30, 1.18);
   winHolePath.closePath();
   doorOuterShape.holes.push(winHolePath);
 
@@ -631,7 +631,7 @@ export function createBremerCabDoorGroup(side: 'left' | 'right', isWireframe: bo
   winShape.moveTo(0.12, 0.55);
   winShape.lineTo(0.845, 0.55);
   winShape.lineTo(0.845, 1.32);
-  winShape.lineTo(0.30, 1.32);
+  winShape.lineTo(0.30, 1.18);
   winShape.closePath();
 
   const winGeo = new THREE.ExtrudeGeometry(winShape, { steps: 1, depth: 0.008, bevelEnabled: false });

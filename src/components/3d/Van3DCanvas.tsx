@@ -127,17 +127,18 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         slidingDoorRef.current.position.z += (targetZ - slidingDoorRef.current.position.z) * 0.12;
       }
 
-      // 3. Rear Hinged Double Swing Doors
+      // 3. Rear Hinged Double Swing Doors (Hinged at X = ±0.725m, swinging OUTWARD)
       if (rearDoorLeftRef.current && rearDoorRightRef.current) {
-        const targetRotY = currentState.isRearOpen ? -Math.PI * 0.75 : 0;
-        rearDoorLeftRef.current.rotation.y += (targetRotY - rearDoorLeftRef.current.rotation.y) * 0.12;
-        rearDoorRightRef.current.rotation.y += (-targetRotY - rearDoorRightRef.current.rotation.y) * 0.12;
+        const targetRotL = currentState.isRearOpen ? -Math.PI * 0.75 : 0; // Outward left
+        const targetRotR = currentState.isRearOpen ? Math.PI * 0.75 : 0;  // Outward right
+        rearDoorLeftRef.current.rotation.y += (targetRotL - rearDoorLeftRef.current.rotation.y) * 0.12;
+        rearDoorRightRef.current.rotation.y += (targetRotR - rearDoorRightRef.current.rotation.y) * 0.12;
       }
 
-      // 4. Driver & Passenger 5-Corner Cab Doors (Hinged at front A-pillar, swinging OUTWARDS forward)
+      // 4. Driver & Passenger 5-Corner Cab Doors (Hinged at front A-pillar Z = -2.42m, swinging OUTWARDS forward)
       if (cabDoorLeftRef.current && cabDoorRightRef.current) {
-        const targetRotL = currentState.isCabDoorsOpen ? -Math.PI * 0.40 : 0; // Swing outward left
-        const targetRotR = currentState.isCabDoorsOpen ? Math.PI * 0.40 : 0;  // Swing outward right
+        const targetRotL = currentState.isCabDoorsOpen ? Math.PI * 0.40 : 0;  // Outward left
+        const targetRotR = currentState.isCabDoorsOpen ? -Math.PI * 0.40 : 0; // Outward right
         cabDoorLeftRef.current.rotation.y += (targetRotL - cabDoorLeftRef.current.rotation.y) * 0.12;
         cabDoorRightRef.current.rotation.y += (targetRotR - cabDoorRightRef.current.rotation.y) * 0.12;
       }
@@ -265,8 +266,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const accentMat = new THREE.MeshStandardMaterial({ color: 0xff6b00 });
 
     const floorY = BREMER_GEOMETRY_SPECS.floorY; // 0.55m
-    const HW = BREMER_GEOMETRY_SPECS.bodyWidth / 2; // 0.96m
-    const cabZFront = -1.525 - BREMER_GEOMETRY_SPECS.cabLength; // -2.450m
+    const HW = BREMER_GEOMETRY_SPECS.bodyWidth / 2; // 0.9875m
+    const aPillarZ = -2.420;
 
     // ── 1. VEHICLE CHASSIS, FRAME RAILS & SICKENBODEN FLOOR ──
     const floorGroup = new THREE.Group();
@@ -301,10 +302,10 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(0, 0.6, 0),
     });
 
-    // ── 3. 5-CORNER OPENABLE CAB DOORS (Hinged at front A-pillar Z = -2.45m) ──
+    // ── 3. 5-CORNER OPENABLE CAB DOORS (Hinged at A-pillar Z = -2.42m, X = ±0.9875m) ──
     // Driver Left Cab Door Pivot
     const cabDoorPivotL = new THREE.Group();
-    cabDoorPivotL.position.set(-HW, floorY, cabZFront);
+    cabDoorPivotL.position.set(-HW, floorY, aPillarZ);
     const cabDoorMeshL = createBremerCabDoorGroup('left', vanState.displayMode === 'wireframe');
     cabDoorPivotL.add(cabDoorMeshL);
     cabDoorLeftRef.current = cabDoorPivotL;
@@ -312,9 +313,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     // Passenger Right Cab Door Pivot
     const cabDoorPivotR = new THREE.Group();
-    cabDoorPivotR.position.set(HW, floorY, cabZFront);
+    cabDoorPivotR.position.set(HW, floorY, aPillarZ);
     const cabDoorMeshR = createBremerCabDoorGroup('right', vanState.displayMode === 'wireframe');
-    cabDoorMeshR.scale.x = -1; // Mirror horizontally for right door
     cabDoorPivotR.add(cabDoorMeshR);
     cabDoorRightRef.current = cabDoorPivotR;
     scene.add(cabDoorPivotR);
@@ -360,9 +360,9 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
-    // ── 6. REAR HINGED SWING DOORS (Attached to C/D rear pillars at Z = +1.525m) ──
+    // ── 6. REAR HINGED SWING DOORS (Hinged at X = ±0.725m, Z = +1.525m) ──
     const rearZ = 1.525;
-    const doorW = 0.91;
+    const doorW = 0.725; // 1450mm rear door opening width / 2
     const doorH = 1.35;
     const rearDoorMat = new THREE.MeshStandardMaterial({
       color: 0xcbd5e1,
@@ -371,18 +371,20 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       side: THREE.DoubleSide,
     });
 
+    // Left rear door pivot hinged at X = -0.725m
     const rearPivotL = new THREE.Group();
-    rearPivotL.position.set(-HW, 0, rearZ);
+    rearPivotL.position.set(-0.725, 0, rearZ);
     const rearDoorLMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
-    rearDoorLMesh.position.set(doorW / 2, floorY + doorH / 2, 0);
+    rearDoorLMesh.position.set(-doorW / 2, floorY + doorH / 2, 0);
     rearPivotL.add(rearDoorLMesh);
     rearDoorLeftRef.current = rearPivotL;
     scene.add(rearPivotL);
 
+    // Right rear door pivot hinged at X = +0.725m
     const rearPivotR = new THREE.Group();
-    rearPivotR.position.set(HW, 0, rearZ);
+    rearPivotR.position.set(0.725, 0, rearZ);
     const rearDoorRMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
-    rearDoorRMesh.position.set(-doorW / 2, floorY + doorH / 2, 0);
+    rearDoorRMesh.position.set(doorW / 2, floorY + doorH / 2, 0);
     rearPivotR.add(rearDoorRMesh);
     rearDoorRightRef.current = rearPivotR;
     scene.add(rearPivotR);
@@ -425,7 +427,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(-0.5, 0, 0),
     });
 
-    // ── 8. OUTDOOR HEAVY-DUTY DROP KITCHEN (Anchored FLAT ON CARGO FLOOR Y = 0.55m!) ──
+    // ── 8. OUTDOOR HEAVY-DUTY DROP KITCHEN ──
     const kitchenGroup = new THREE.Group();
 
     const kitBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.88, 0.85), kitchenMat);
@@ -445,7 +447,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     kitchenGroup.add(legMesh);
 
     kitchenGroupRef.current = kitchenGroup;
-    kitchenGroup.position.set(0.60, floorY, -0.65); // Anchored at cargo floor level!
+    kitchenGroup.position.set(0.60, floorY, -0.65);
     scene.add(kitchenGroup);
 
     explodedGroupsRef.current.push({
@@ -519,7 +521,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
     group.add(createCalloutLine(new THREE.Vector3(-0.95, 0.56, -1.525), new THREE.Vector3(-0.95, 0.56, 1.525), orangeLineMat));
     group.add(createCalloutLine(new THREE.Vector3(-0.95, 0.55, 0.0), new THREE.Vector3(-0.95, 2.40, 0.0)));
-    group.add(createCalloutLine(new THREE.Vector3(1.10, 0.0, 1.525), new THREE.Vector3(1.10, 2.55, 1.525), orangeLineMat));
+    group.add(createCalloutLine(new THREE.Vector3(1.10, 0.0, 1.525), new THREE.Vector3(1.10, 2.525, 1.525), orangeLineMat));
     group.add(createCalloutLine(new THREE.Vector3(-0.86, 0.56, 1.55), new THREE.Vector3(0.86, 0.56, 1.55)));
 
     return group;

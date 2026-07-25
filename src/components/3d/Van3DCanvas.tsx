@@ -137,8 +137,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
       // 4. Driver & Passenger 5-Corner Cab Doors (Hinged at front A-pillar Z = -2.42m, swinging OUTWARDS forward)
       if (cabDoorLeftRef.current && cabDoorRightRef.current) {
-        const targetRotL = currentState.isCabDoorsOpen ? Math.PI * 0.40 : 0;  // Outward left
-        const targetRotR = currentState.isCabDoorsOpen ? -Math.PI * 0.40 : 0; // Outward right
+        const targetRotL = currentState.isCabDoorsOpen ? -Math.PI * 0.40 : 0;  // Outward left
+        const targetRotR = currentState.isCabDoorsOpen ? Math.PI * 0.40 : 0; // Outward right
         cabDoorLeftRef.current.rotation.y += (targetRotL - cabDoorLeftRef.current.rotation.y) * 0.12;
         cabDoorRightRef.current.rotation.y += (targetRotR - cabDoorRightRef.current.rotation.y) * 0.12;
       }
@@ -360,8 +360,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
-    // ── 6. REAR HINGED SWING DOORS (Hinged at X = ±0.725m, Z = +1.525m) ──
-    const rearZ = 1.525;
+    // ── 6. REAR HINGED SWING DOORS (Hinged at X = ±0.725m, Z = +1.55m) ──
+    const rearZ = 1.55;
     const doorW = 0.725; // 1450mm rear door opening width / 2
     const doorH = 1.35;
     const rearDoorMat = new THREE.MeshStandardMaterial({
@@ -375,7 +375,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const rearPivotL = new THREE.Group();
     rearPivotL.position.set(-0.725, 0, rearZ);
     const rearDoorLMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
-    rearDoorLMesh.position.set(-doorW / 2, floorY + doorH / 2, 0);
+    rearDoorLMesh.position.set(doorW / 2, floorY + doorH / 2, 0);
     rearPivotL.add(rearDoorLMesh);
     rearDoorLeftRef.current = rearPivotL;
     scene.add(rearPivotL);
@@ -384,7 +384,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const rearPivotR = new THREE.Group();
     rearPivotR.position.set(0.725, 0, rearZ);
     const rearDoorRMesh = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.035), rearDoorMat);
-    rearDoorRMesh.position.set(doorW / 2, floorY + doorH / 2, 0);
+    rearDoorRMesh.position.set(-doorW / 2, floorY + doorH / 2, 0);
     rearPivotR.add(rearDoorRMesh);
     rearDoorRightRef.current = rearPivotR;
     scene.add(rearPivotR);

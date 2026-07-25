@@ -243,7 +243,7 @@ export function buildGfkHighRoofShell(bodyPaintMat: THREE.Material): THREE.Group
 }
 
 /**
- * Builds 25° Downward Sloping Bonnet & Side Fenders (Haube & Kotflügel)
+ * Builds 25° Downward Sloping Bonnet & Side Fenders (Haube & Kotflügel) with authentic Bremer Snout Profile
  */
 export function buildFrontBonnetAndFenders(bodyPaintSolidMat: THREE.Material): THREE.Group {
   const group = new THREE.Group();
@@ -252,30 +252,44 @@ export function buildFrontBonnetAndFenders(bodyPaintSolidMat: THREE.Material): T
   const HW = W / 2; // 0.9875m
   const floorY = BREMER_GEOMETRY_SPECS.floorY; // 0.55m
   const aPillarZ = -2.420;
-  const bumperZ = -2.770; // 720mm front overhang from axle Z = -2.05m
+  const bumperZ = -2.770;
+  const snoutLength = Math.abs(aPillarZ - bumperZ); // 0.35m
 
-  // 25° Downward Sloping Bonnet Hood (from lower cowl Y=1.15m, Z=-2.42m down to grille top Y=0.85m, Z=-2.77m)
-  const bonnetShape = new THREE.Shape();
-  bonnetShape.moveTo(-HW + 0.04, 0.0);
-  bonnetShape.lineTo(-HW + 0.04, 0.35);
-  bonnetShape.lineTo(HW - 0.04, 0.35);
-  bonnetShape.lineTo(HW - 0.04, 0.0);
-  bonnetShape.closePath();
+  // 1. Curved Bonnet Hood (Haube)
+  const bonnetProfile = new THREE.Shape();
+  // Drawn in X,Y where X maps to Z-axis (length) and Y maps to Y-axis (height).
+  bonnetProfile.moveTo(0, 0.30); // Front grille top (Z=-2.77)
+  bonnetProfile.quadraticCurveTo(0.15, 0.45, snoutLength, 0.60); // Curve up to cowl (Z=-2.42)
+  bonnetProfile.lineTo(snoutLength, 0.20); // Down to fender seam
+  bonnetProfile.lineTo(0, 0.20); // Forward to front
+  bonnetProfile.closePath();
 
-  const bonnetGeo = new THREE.ExtrudeGeometry(bonnetShape, { steps: 1, depth: 0.35, bevelEnabled: false });
+  const bonnetGeo = new THREE.ExtrudeGeometry(bonnetProfile, { steps: 1, depth: W - 0.08, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015 });
   const bonnetMesh = new THREE.Mesh(bonnetGeo, bodyPaintSolidMat);
-  bonnetMesh.rotation.x = Math.PI / 9; // Slopes DOWNWARD towards front bumper!
-  bonnetMesh.position.set(0, floorY + 0.50, bumperZ);
+  bonnetMesh.rotation.y = -Math.PI / 2; // X becomes Z, Z becomes -X
+  bonnetMesh.position.set(-(W - 0.08) / 2, floorY, bumperZ);
   group.add(bonnetMesh);
 
-  // Side Fenders (Kotflügel) wrapping around front wheel arches
-  const fenderGeoL = new THREE.BoxGeometry(0.04, 0.40, 0.35);
-  const fenderL = new THREE.Mesh(fenderGeoL, bodyPaintSolidMat);
-  fenderL.position.set(-HW - 0.01, floorY + 0.20, aPillarZ - 0.175);
+  // 2. Side Fenders (Kotflügel) wrapping around the front corners
+  const fenderProfile = new THREE.Shape();
+  fenderProfile.moveTo(0, -0.05); // Z=-2.77, below floor
+  fenderProfile.lineTo(0, 0.30); // Z=-2.77, meets bonnet
+  fenderProfile.quadraticCurveTo(0.15, 0.45, snoutLength, 0.60); // Z=-2.42, meets bonnet
+  fenderProfile.lineTo(snoutLength, 0.20); // Z=-2.42, wheel arch start
+  fenderProfile.quadraticCurveTo(snoutLength - 0.10, 0.20, snoutLength - 0.15, -0.05); // Curve down for front of wheel arch
+  fenderProfile.lineTo(0, -0.05);
+  fenderProfile.closePath();
+
+  const fenderGeo = new THREE.ExtrudeGeometry(fenderProfile, { steps: 1, depth: 0.04, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.01 });
+  
+  const fenderL = new THREE.Mesh(fenderGeo, bodyPaintSolidMat);
+  fenderL.rotation.y = -Math.PI / 2;
+  fenderL.position.set(-HW + 0.01, floorY, bumperZ);
   group.add(fenderL);
 
-  const fenderR = new THREE.Mesh(fenderGeoL, bodyPaintSolidMat);
-  fenderR.position.set(HW + 0.01, floorY + 0.20, aPillarZ - 0.175);
+  const fenderR = new THREE.Mesh(fenderGeo, bodyPaintSolidMat);
+  fenderR.rotation.y = -Math.PI / 2;
+  fenderR.position.set(HW - 0.03, floorY, bumperZ);
   group.add(fenderR);
 
   return group;
@@ -390,24 +404,20 @@ export function createBremerBodyShellGroup(
   // 6. FRONT FACE: Grille, Headlights, Bumper & Backward Leaning Windshield
   const frontGroup = new THREE.Group();
 
-  const frontFace = new THREE.Mesh(new THREE.BoxGeometry(W, 0.58, 0.025), bodyPaintSolid);
-  frontFace.position.set(0, floorY + 0.25, bumperZ);
-  frontGroup.add(frontFace);
-
-  const grilleBack = new THREE.Mesh(new THREE.BoxGeometry(1.40, 0.28, 0.03), blackPlastic);
-  grilleBack.position.set(0, floorY + 0.30, bumperZ - 0.02);
+  const grilleBack = new THREE.Mesh(new THREE.BoxGeometry(1.40, 0.35, 0.03), blackPlastic);
+  grilleBack.position.set(0, floorY + 0.125, bumperZ - 0.02);
   frontGroup.add(grilleBack);
 
   for (let i = 0; i < 4; i++) {
     const slat = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.025, 0.01), chrome);
-    slat.position.set(0, floorY + 0.21 + i * 0.065, bumperZ - 0.04);
+    slat.position.set(0, floorY + 0.01 + i * 0.075, bumperZ - 0.04);
     frontGroup.add(slat);
   }
 
   const starGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.015, 20);
   starGeo.rotateX(Math.PI / 2);
   const starMesh = new THREE.Mesh(starGeo, chrome);
-  starMesh.position.set(0, floorY + 0.30, bumperZ - 0.05);
+  starMesh.position.set(0, floorY + 0.15, bumperZ - 0.05);
   frontGroup.add(starMesh);
 
   const headlightGeo = new THREE.CylinderGeometry(0.085, 0.085, 0.04, 20);
@@ -415,18 +425,18 @@ export function createBremerBodyShellGroup(
   const hlGlass = new THREE.MeshStandardMaterial({ color: 0xfefce8, transparent: true, opacity: 0.75, roughness: 0.05 });
 
   const hlL = new THREE.Mesh(headlightGeo, hlGlass);
-  hlL.position.set(-0.56, floorY + 0.30, bumperZ - 0.04);
+  hlL.position.set(-0.56, floorY + 0.15, bumperZ - 0.04);
   frontGroup.add(hlL);
   const hlR = new THREE.Mesh(headlightGeo, hlGlass);
-  hlR.position.set(0.56, floorY + 0.30, bumperZ - 0.04);
+  hlR.position.set(0.56, floorY + 0.15, bumperZ - 0.04);
   frontGroup.add(hlR);
 
   const indicatorGeo = new THREE.BoxGeometry(0.12, 0.06, 0.035);
   const indL = new THREE.Mesh(indicatorGeo, amber);
-  indL.position.set(-0.82, floorY + 0.30, bumperZ - 0.02);
+  indL.position.set(-0.82, floorY + 0.15, bumperZ - 0.02);
   frontGroup.add(indL);
   const indR = new THREE.Mesh(indicatorGeo, amber);
-  indR.position.set(0.82, floorY + 0.30, bumperZ - 0.02);
+  indR.position.set(0.82, floorY + 0.15, bumperZ - 0.02);
   frontGroup.add(indR);
 
   const bumper = new THREE.Mesh(new THREE.BoxGeometry(W + 0.04, 0.14, 0.10), chrome);
@@ -593,16 +603,18 @@ export function createBremerCabDoorGroup(side: 'left' | 'right', isWireframe: bo
 
   // Hinge origin (0,0,0) at front A-pillar edge (Z = -2.42m). Door panel extends BACKWARD (+Z) from Z = 0 to Z = +0.895m (B-pillar)
   const doorOuterShape = new THREE.Shape();
-  doorOuterShape.moveTo(0, 0); // Bottom front corner (A-pillar)
-  doorOuterShape.lineTo(0.895, 0); // Bottom rear corner (B-pillar)
-  doorOuterShape.lineTo(0.895, 1.40); // Top rear corner at B-pillar header
-  doorOuterShape.lineTo(0.27, 1.40); // Top A-pillar slanted corner
-  doorOuterShape.lineTo(0, 0.30); // Front vertical lower edge at wheel arch
+  doorOuterShape.moveTo(0.895, 0); // Bottom rear corner at B-pillar
+  doorOuterShape.lineTo(0.35, 0); // Bottom edge straight to wheel arch start
+  doorOuterShape.quadraticCurveTo(0.15, 0.05, 0.05, 0.30); // Curve up and forward around front wheel arch
+  doorOuterShape.lineTo(0, 0.40); // To front edge (meets fender)
+  doorOuterShape.lineTo(0, 0.85); // Up to bottom of window sill
+  doorOuterShape.lineTo(0.27, 1.40); // A-pillar slant backward
+  doorOuterShape.lineTo(0.895, 1.40); // Top rear corner
   doorOuterShape.closePath();
 
   // Window Hole inside door panel
   const winHolePath = new THREE.Path();
-  winHolePath.moveTo(0.075, 0.55);
+  winHolePath.moveTo(0.12, 0.55);
   winHolePath.lineTo(0.845, 0.55);
   winHolePath.lineTo(0.845, 1.32);
   winHolePath.lineTo(0.30, 1.32);
@@ -616,7 +628,7 @@ export function createBremerCabDoorGroup(side: 'left' | 'right', isWireframe: bo
 
   // Transparent Window Glass Panel fitted into window hole
   const winShape = new THREE.Shape();
-  winShape.moveTo(0.075, 0.55);
+  winShape.moveTo(0.12, 0.55);
   winShape.lineTo(0.845, 0.55);
   winShape.lineTo(0.845, 1.32);
   winShape.lineTo(0.30, 1.32);

@@ -145,7 +145,8 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
 
       // 5. Outdoor Drop-out Kitchen (Anchored FLAT ON CARGO FLOOR Y = 0.55m!)
       if (kitchenGroupRef.current) {
-        const targetX = currentState.isKitchenExtended ? 1.25 : 0.60;
+        const sideSign = currentState.driveSide === 'LHD' ? 1.0 : -1.0;
+        const targetX = currentState.isKitchenExtended ? 1.25 * sideSign : 0.60 * sideSign;
         kitchenGroupRef.current.position.x += (targetX - kitchenGroupRef.current.position.x) * 0.12;
         kitchenGroupRef.current.position.y = floorY; // Strictly anchored on cargo floor Y = 0.55m!
 
@@ -200,7 +201,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       }
       renderer.dispose();
     };
-  }, []);
+  }, [vanState.driveSide]);
 
   // Handle Display Mode, Wireframe & Camera Presets
   useEffect(() => {
@@ -393,30 +394,30 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     const loungeGroup = new THREE.Group();
 
     const benchL = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.45, 1.90), benchMat);
-    benchL.position.set(-0.61, floorY + 0.225, 0.5);
+    benchL.position.set(-0.61, floorY + 0.225, 0.65);
     benchL.castShadow = true;
     loungeGroup.add(benchL);
 
     const cushionL = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.08, 1.88), cushionMat);
-    cushionL.position.set(-0.61, floorY + 0.49, 0.5);
+    cushionL.position.set(-0.61, floorY + 0.49, 0.65);
     loungeGroup.add(cushionL);
 
     const benchR = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.45, 1.90), benchMat);
-    benchR.position.set(0.61, floorY + 0.225, 0.5);
+    benchR.position.set(0.61, floorY + 0.225, 0.65);
     benchR.castShadow = true;
     loungeGroup.add(benchR);
 
     const cushionR = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.08, 1.88), cushionMat);
-    cushionR.position.set(0.61, floorY + 0.49, 0.5);
+    cushionR.position.set(0.61, floorY + 0.49, 0.65);
     loungeGroup.add(cushionR);
 
     const tableTop = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.02, 0.70), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 }));
-    tableTop.position.set(-0.10, floorY + 0.72, 0.5);
+    tableTop.position.set(-0.10, floorY + 0.72, 0.65);
     tableTop.castShadow = true;
     loungeGroup.add(tableTop);
 
     const tableLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.45), stainlessMat);
-    tableLeg.position.set(-0.35, floorY + 0.48, 0.5);
+    tableLeg.position.set(-0.35, floorY + 0.48, 0.65);
     loungeGroup.add(tableLeg);
 
     scene.add(loungeGroup);
@@ -456,14 +457,16 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     kitchenLegRef.current = legMesh;
     kitchenGroup.add(legMesh);
 
+    const sideSign = vanState.driveSide === 'LHD' ? 1.0 : -1.0;
+
     kitchenGroupRef.current = kitchenGroup;
-    kitchenGroup.position.set(0.60, floorY, -0.65);
+    kitchenGroup.position.set(0.60 * sideSign, floorY, -0.65);
     scene.add(kitchenGroup);
 
     explodedGroupsRef.current.push({
       group: kitchenGroup,
-      defaultPos: new THREE.Vector3(0.60, floorY, -0.65),
-      offsetPos: new THREE.Vector3(1.20, floorY, -0.65),
+      defaultPos: new THREE.Vector3(0.60 * sideSign, floorY, -0.65),
+      offsetPos: new THREE.Vector3(1.20 * sideSign, floorY, -0.65),
     });
 
     // ── 9. ELECTRIC 4-POINT STRAP DROP-DOWN BED ──

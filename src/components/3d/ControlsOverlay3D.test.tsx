@@ -107,4 +107,28 @@ describe('ControlsOverlay3D component', () => {
     fireEvent.click(screen.getByText('Explosionsansicht'));
     expect(onSetDisplayMode).toHaveBeenCalledWith('exploded');
   });
+
+  it('triggers onSetDriveSide callback', () => {
+    const onSetDriveSide = vi.fn();
+    render(
+      <ControlsOverlay3D
+        vanState={initialVanState}
+        onTogglePartition={() => {}}
+        onToggleSliding={() => {}}
+        onToggleRear={() => {}}
+        onToggleCabDoors={() => {}}
+        onToggleKitchen={() => {}}
+        onToggleBed={() => {}}
+        onSetDisplayMode={() => {}}
+        onSetCameraPreset={() => {}}
+        onSetDriveSide={onSetDriveSide}
+      />
+    );
+
+    fireEvent.click(screen.getByText('LHD 🇩🇪 (Links)'));
+    expect(onSetDriveSide).toHaveBeenCalledWith('LHD');
+
+    fireEvent.click(screen.getByText('RHD 🇬🇧 (Rechts)'));
+    expect(onSetDriveSide).toHaveBeenCalledWith('RHD');
+  });
 });

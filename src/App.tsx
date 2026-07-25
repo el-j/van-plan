@@ -58,6 +58,7 @@ export const App: React.FC = () => {
               onToggleBed={toggleBed}
               onSetDisplayMode={setDisplayMode}
               onSetCameraPreset={setCameraPreset}
+              onSetDriveSide={setDriveSide}
             />
           </div>
         )}

@@ -12,6 +12,7 @@ interface ControlsOverlay3DProps {
   onToggleBed: () => void;
   onSetDisplayMode: (mode: DisplayMode) => void;
   onSetCameraPreset: (preset: VanState['cameraPreset']) => void;
+  onSetDriveSide?: (side: 'LHD' | 'RHD') => void;
 }
 
 export const ControlsOverlay3D: React.FC<ControlsOverlay3DProps> = ({
@@ -24,6 +25,7 @@ export const ControlsOverlay3D: React.FC<ControlsOverlay3DProps> = ({
   onToggleBed,
   onSetDisplayMode,
   onSetCameraPreset,
+  onSetDriveSide,
 }) => {
   return (
     <div className="controls-overlay-3d">
@@ -154,6 +156,28 @@ export const ControlsOverlay3D: React.FC<ControlsOverlay3DProps> = ({
             onClick={() => onSetDisplayMode('exploded')}
           >
             Explosionsansicht
+          </button>
+        </div>
+      </div>
+
+      <div className="control-divider" />
+
+      <div className="control-section">
+        <span className="section-title">Lenkrad / Fahrerseite</span>
+        <div className="btn-group">
+          <button
+            className={`ctrl-btn ${vanState.driveSide === 'LHD' ? 'active' : ''}`}
+            onClick={() => onSetDriveSide && onSetDriveSide('LHD')}
+            title="Linkslenker (Deutschland)"
+          >
+            LHD 🇩🇪 (Links)
+          </button>
+          <button
+            className={`ctrl-btn ${vanState.driveSide === 'RHD' ? 'active' : ''}`}
+            onClick={() => onSetDriveSide && onSetDriveSide('RHD')}
+            title="Rechtslenker (Großbritannien)"
+          >
+            RHD 🇬🇧 (Rechts)
           </button>
         </div>
       </div>

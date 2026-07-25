@@ -113,6 +113,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       animationFrameId = requestAnimationFrame(animate);
 
       const currentState = vanStateRef.current;
+      const floorY = BREMER_GEOMETRY_SPECS.floorY; // 0.55m
 
       // 1. Centered Partition Wall Sliding Door
       if (partitionDoorRef.current) {
@@ -120,9 +121,9 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         partitionDoorRef.current.position.x += (targetX - partitionDoorRef.current.position.x) * 0.12;
       }
 
-      // 2. Side Passenger Sliding Door
+      // 2. Side Passenger Sliding Door (In right wall cutout hole: Z=-0.95m closed to Z=+0.70m open)
       if (slidingDoorRef.current) {
-        const targetZ = currentState.isSlidingOpen ? 0.85 : -0.15;
+        const targetZ = currentState.isSlidingOpen ? 0.70 : -0.95;
         slidingDoorRef.current.position.z += (targetZ - slidingDoorRef.current.position.z) * 0.12;
       }
 
@@ -141,12 +142,11 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
         cabDoorRightRef.current.rotation.y += (targetRotR - cabDoorRightRef.current.rotation.y) * 0.12;
       }
 
-      // 5. Outdoor Drop-out Kitchen
+      // 5. Outdoor Drop-out Kitchen (Anchored FLAT ON CARGO FLOOR Y = 0.55m!)
       if (kitchenGroupRef.current) {
         const targetX = currentState.isKitchenExtended ? 1.25 : 0.60;
-        const targetY = currentState.isKitchenExtended ? 0.40 : 0.60;
         kitchenGroupRef.current.position.x += (targetX - kitchenGroupRef.current.position.x) * 0.12;
-        kitchenGroupRef.current.position.y += (targetY - kitchenGroupRef.current.position.y) * 0.12;
+        kitchenGroupRef.current.position.y = floorY; // Strictly anchored on cargo floor Y = 0.55m!
 
         if (kitchenLegRef.current) {
           kitchenLegRef.current.visible = currentState.isKitchenExtended;
@@ -302,7 +302,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     });
 
     // ── 3. 5-CORNER OPENABLE CAB DOORS (Hinged at front A-pillar Z = -2.45m) ──
-    // Driver Left Cab Door Pivot (Hinge at front A-pillar edge Z = -2.45m)
+    // Driver Left Cab Door Pivot
     const cabDoorPivotL = new THREE.Group();
     cabDoorPivotL.position.set(-HW, floorY, cabZFront);
     const cabDoorMeshL = createBremerCabDoorGroup('left', vanState.displayMode === 'wireframe');
@@ -310,10 +310,11 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     cabDoorLeftRef.current = cabDoorPivotL;
     scene.add(cabDoorPivotL);
 
-    // Passenger Right Cab Door Pivot (Hinge at front A-pillar edge Z = -2.45m)
+    // Passenger Right Cab Door Pivot
     const cabDoorPivotR = new THREE.Group();
     cabDoorPivotR.position.set(HW, floorY, cabZFront);
     const cabDoorMeshR = createBremerCabDoorGroup('right', vanState.displayMode === 'wireframe');
+    cabDoorMeshR.scale.x = -1; // Mirror horizontally for right door
     cabDoorPivotR.add(cabDoorMeshR);
     cabDoorRightRef.current = cabDoorPivotR;
     scene.add(cabDoorPivotR);
@@ -347,15 +348,15 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(0, 0, -0.7),
     });
 
-    // ── 5. PASSENGER SLIDING DOOR ──
+    // ── 5. PASSENGER SLIDING DOOR (Fits inside right side wall cutout hole Z = -1.50m .. -0.40m) ──
     const slideDoorMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.45,
     });
-    const slideDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.02, 1.40, 1.10), slideDoorMat);
+    const slideDoorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.025, 1.38, 1.08), slideDoorMat);
     const slideSideX = vanState.driveSide === 'LHD' ? HW : -HW;
-    slideDoorFrame.position.set(slideSideX, floorY + 0.70, -0.15);
+    slideDoorFrame.position.set(slideSideX, floorY + 0.70, -0.95);
     slidingDoorRef.current = slideDoorFrame;
     scene.add(slideDoorFrame);
 
@@ -424,7 +425,7 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
       offsetPos: new THREE.Vector3(-0.5, 0, 0),
     });
 
-    // ── 8. OUTDOOR HEAVY-DUTY DROP KITCHEN ──
+    // ── 8. OUTDOOR HEAVY-DUTY DROP KITCHEN (Anchored FLAT ON CARGO FLOOR Y = 0.55m!) ──
     const kitchenGroup = new THREE.Group();
 
     const kitBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.88, 0.85), kitchenMat);
@@ -444,13 +445,13 @@ export const Van3DCanvas: React.FC<Van3DCanvasProps> = ({ vanState, onSelectPart
     kitchenGroup.add(legMesh);
 
     kitchenGroupRef.current = kitchenGroup;
-    kitchenGroup.position.set(0.60, 0.0, -0.65);
+    kitchenGroup.position.set(0.60, floorY, -0.65); // Anchored at cargo floor level!
     scene.add(kitchenGroup);
 
     explodedGroupsRef.current.push({
       group: kitchenGroup,
-      defaultPos: new THREE.Vector3(0.60, 0.0, -0.65),
-      offsetPos: new THREE.Vector3(1.20, 0.0, -0.65),
+      defaultPos: new THREE.Vector3(0.60, floorY, -0.65),
+      offsetPos: new THREE.Vector3(1.20, floorY, -0.65),
     });
 
     // ── 9. ELECTRIC 4-POINT STRAP DROP-DOWN BED ──

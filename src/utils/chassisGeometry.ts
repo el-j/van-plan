@@ -204,8 +204,10 @@ export function buildGfkHighRoofShell(bodyPaintMat: THREE.Material): THREE.Group
   const L = BREMER_GEOMETRY_SPECS.cargoLength; // 3.05m
   const gutterY = 1.95;
   const roofPeakY = BREMER_GEOMETRY_SPECS.roofPeakY; // 2.525m
-  const roofZFront = -2.15; // Top windshield header line
-  const totalRoofLength = L + 0.625; // 3.675m (from Z = -2.15m to Z = +1.525m)
+  
+  // The main roof peak starts further back at Z = -1.85m to allow for a sloped forehead cap
+  const roofZFront = -1.85; 
+  const totalRoofLength = L + 0.625 - 0.30; // 3.375m (from Z = -1.85m to Z = +1.525m)
 
   // Single continuous barrel roof cross-section profile
   const roofShape = new THREE.Shape();
@@ -225,19 +227,31 @@ export function buildGfkHighRoofShell(bodyPaintMat: THREE.Material): THREE.Group
   roofMesh.userData = { isVehicleHull: true, partName: 'GFK Hochdach Shell' };
   group.add(roofMesh);
 
-  // Aerodynamic Rounded Front Visor Cap (curving smoothly down to top windshield header Z = -2.15m, Y = 1.80m)
-  const visorShape = new THREE.Shape();
-  visorShape.moveTo(-HW, gutterY);
-  visorShape.quadraticCurveTo(-HW, roofPeakY, -HW * 0.65, roofPeakY);
-  visorShape.lineTo(HW * 0.65, roofPeakY);
-  visorShape.quadraticCurveTo(HW, roofPeakY, HW, gutterY);
-  visorShape.closePath();
+  // Aerodynamic Rounded Front Visor Cap (lofted from roof cross-section down to gutter line at Z = -2.15m)
+  const capShape = new THREE.Shape();
+  capShape.moveTo(-HW, gutterY);
+  capShape.quadraticCurveTo(-HW, roofPeakY, -HW * 0.65, roofPeakY);
+  capShape.lineTo(HW * 0.65, roofPeakY);
+  capShape.quadraticCurveTo(HW, roofPeakY, HW, gutterY);
+  capShape.closePath();
 
-  const visorGeo = new THREE.ExtrudeGeometry(visorShape, { steps: 2, depth: 0.08, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.04, bevelSegments: 3 });
-  const visorMesh = new THREE.Mesh(visorGeo, bodyPaintMat);
-  visorMesh.position.set(0, 0, roofZFront - 0.06);
-  visorMesh.userData = { isVehicleHull: true, partName: 'GFK Hochdach Stirnvisier' };
-  group.add(visorMesh);
+  const capGeo = new THREE.ExtrudeGeometry(capShape, { steps: 5, depth: 0.30, bevelEnabled: false });
+  
+  // Loft vertices dynamically to slope down towards front (Z = 0)
+  const posAttr = capGeo.attributes.position;
+  for (let i = 0; i < posAttr.count; i++) {
+    const y = posAttr.getY(i);
+    const z = posAttr.getZ(i); // 0 (front) to 0.30 (back)
+    const t = z / 0.30; // 0 to 1
+    const newY = gutterY + (y - gutterY) * Math.sin(t * Math.PI / 2); // Smooth sinus curve slope
+    posAttr.setY(i, newY);
+  }
+  capGeo.computeVertexNormals();
+
+  const capMesh = new THREE.Mesh(capGeo, bodyPaintMat);
+  capMesh.position.set(0, 0, -2.15); // Bridges Z=-2.15m to Z=-1.85m
+  capMesh.userData = { isVehicleHull: true, partName: 'GFK Hochdach Stirnhaube' };
+  group.add(capMesh);
 
   return group;
 }
@@ -497,22 +511,30 @@ export function createBremerBodyShellGroup(
   group.add(dashBoard);
 
   const stColumnGroup = new THREE.Group();
-  const stColumnShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.40), blackPlastic);
-  stColumnShaft.rotation.x = -Math.PI / 4; // 45° sloping column extending UP & BACK towards driver!
-  stColumnShaft.position.set(0, 0.15, 0.10);
+  
+  // Angle of the column: 60 degrees from horizontal (Math.PI / 3)
+  const colAngle = Math.PI / 3; 
+  
+  // Column shaft
+  const stColumnShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.50), blackPlastic);
+  stColumnShaft.rotation.x = -colAngle; // Tilt back towards driver
+  stColumnShaft.position.set(0, 0.20, -0.05); // Position inside group
   stColumnGroup.add(stColumnShaft);
 
-  const stWheelRim = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.016, 8, 24), blackPlastic);
-  stWheelRim.rotation.x = -Math.PI / 4;
-  stWheelRim.position.set(0, 0.30, 0.22);
+  // Wheel rim (flat, tilted)
+  const stWheelRim = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.015, 8, 24), blackPlastic);
+  stWheelRim.rotation.x = Math.PI / 2 - colAngle; // Tilted to be perpendicular to the column shaft
+  stWheelRim.position.set(0, 0.40, -0.15);
   stColumnGroup.add(stWheelRim);
 
-  const stHub = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.03, 16), blackPlastic);
-  stHub.rotation.x = -Math.PI / 4;
-  stHub.position.set(0, 0.30, 0.22);
+  const stHub = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.03, 16), blackPlastic);
+  stHub.rotation.x = Math.PI / 2 - colAngle;
+  stHub.position.set(0, 0.40, -0.15);
   stColumnGroup.add(stHub);
 
-  stColumnGroup.position.set(driverX, floorY + 0.55, aPillarZ + 0.10);
+  // Position the entire group relative to the cab floor
+  // Let's place it at the driver's side X, and Y = floorY (0.55), Z = aPillarZ + 0.30
+  stColumnGroup.position.set(driverX, floorY, aPillarZ + 0.30); // Z = -2.12m
   group.add(stColumnGroup);
 
   // 8. REAR D-PILLAR CORNER BODY PANELS (262.5mm wide from X = ±0.725m to ±0.9875m), BUMPER & TAIL LIGHTS
@@ -644,23 +666,32 @@ export function createBremerCabDoorGroup(side: 'left' | 'right', isWireframe: bo
   frameBorder.position.set(0.46, 0.54, 0.015);
   doorGroup.add(frameBorder);
 
+  // Position handle and mirrors on the outside (based on left/right side logic)
+  const isLeft = side === 'left';
+  const handleZ = isLeft ? 0.04 : -0.01;
+  const mirrorZ = isLeft ? 0.12 : -0.12;
+  const armZ = isLeft ? 0.06 : -0.06;
+
   // Outer Door Handle
   const handleMesh = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.04, 0.025), blackPlastic);
-  handleMesh.position.set(0.65, 0.45, side === 'left' ? -0.015 : 0.035);
+  handleMesh.position.set(0.65, 0.45, handleZ);
   doorGroup.add(handleMesh);
 
   // Side Rearview Mirror (Außenspiegel) attached at front A-pillar edge
   const mirrorGroup = new THREE.Group();
   const mirrorHousing = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.22, 0.14), blackPlastic);
-  mirrorHousing.position.set(0.10, 0.70, side === 'left' ? -0.12 : 0.12);
+  mirrorHousing.position.set(0.10, 0.70, mirrorZ);
   mirrorGroup.add(mirrorHousing);
 
   const mirrorArm = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.15), blackPlastic);
   mirrorArm.rotation.z = Math.PI / 4;
-  mirrorArm.position.set(0.15, 0.65, side === 'left' ? -0.06 : 0.06);
+  mirrorArm.position.set(0.15, 0.65, armZ);
   mirrorGroup.add(mirrorArm);
 
   doorGroup.add(mirrorGroup);
+
+  // Rotate doorGroup by -90 degrees so it runs longitudinally along the Z axis
+  doorGroup.rotation.y = -Math.PI / 2;
 
   return doorGroup;
 }
